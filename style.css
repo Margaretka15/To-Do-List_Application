@@ -1,0 +1,155 @@
+body{
+    margin: 0;
+    background-color: #CFDAC8;
+    color: white;
+}
+#main-section{
+    display: flex;
+    flex-direction: row;
+}
+.container{
+    width: 50%;
+    height: 100vh;
+
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+}
+.box{
+    display: flex;
+    align-items: center;
+    font-family: 'Bitter', serif;
+    flex-direction: column;
+    z-index: 1;
+}
+.container p{
+    width: 80%;
+    text-align: center;
+}
+.container h1{
+    font-size: 90px;
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    user-select: none;
+    margin-bottom: 0;
+    width: 90%;
+}
+.container h2{
+    margin-bottom: 60px;
+    font-weight: bold;
+}
+.image-div{
+
+    background-image: url("images/forest2.jpg ");
+    opacity: 0.7;
+    position: absolute;
+    background-size: cover;
+    height: 100vh;
+    width: 50%;
+}
+button{
+    background-color: #464F41;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    height: 60px;
+    width: 300px;
+    margin-top: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: 'Bitter', serif;
+    font-weight: bold;
+}
+button:hover{
+    box-shadow: 0 0 10px 10px white ;
+}
+.left{
+    background-color: black;
+
+
+}
+.right{
+    /*background-color: #CFDAC8;*/
+}
+#message-box{
+    height:60%;
+    width: 70%;
+    background-color: #464F41;
+    display: block;
+}
+.open{
+    display: block;
+}
+
+.big-box{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    justify-content: center;
+    vertical-align: center;
+    align-items: center;
+    /*background-color: gray ;*/
+    /*opacity: 0.9;*/
+
+}
+.gray-box{
+    background-color: gray;
+    opacity: 0.4}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    /*#main-section{*/
+    /*    flex-direction: column;*/
+    /*}*/
+    /*.container{*/
+    /*    width: 100%;*/
+    /*    height: 100vh;*/
+    /*}*/
+    /*.image-div{*/
+    /*    width: 100%;*/
+    /*    height: 100vh;*/
+    /*}*/
+    /*.right{*/
+    /*    height: 50vh;*/
+    /*}*/
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (max-width: 800px) {
+    #main-section{
+        flex-direction: column;
+    }
+    .container{
+        width: 100%;
+        height: 100vh;
+    }
+    .image-div{
+        width: 100%;
+        height: 100vh;
+    }
+    .right{
+        height: 50vh;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px){
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}
