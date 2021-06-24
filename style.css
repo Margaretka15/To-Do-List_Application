@@ -2,6 +2,7 @@ body{
     margin: 0;
     background-color: #CFDAC8;
     color: white;
+    font-family: 'Bitter', serif;
 }
 #main-section{
     display: flex;
@@ -63,13 +64,31 @@ button{
     font-family: 'Bitter', serif;
     font-weight: bold;
 }
+.light{
+    background-color: #CFDAC8;
+    color: #464F41;
+}
+input{
+    height: 50px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 30px;
+    padding: 10px 20px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    margin-top: 5px;
+}
+label{
+    width: 100%;
+}
+
 button:hover{
     box-shadow: 0 0 10px 10px white ;
 }
 .left{
     background-color: black;
-
-
 }
 .right{
     /*background-color: #CFDAC8;*/
@@ -79,13 +98,27 @@ button:hover{
     width: 70%;
     background-color: #464F41;
     display: block;
+
+    padding: 40px 75px;
+}
+form{
+    display: flex;
+    width: 60%;
+
+
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+}
+#message-box  h2{
+    user-select: none;
 }
 .open{
     display: block;
 }
 
 .big-box{
-    display: flex;
+    display: none;
     height: 100%;
     width: 100%;
     position: absolute;
@@ -100,7 +133,77 @@ button:hover{
 }
 .gray-box{
     background-color: gray;
-    opacity: 0.4}
+    opacity: 0.4
+}
+
+#dashboard-section{
+
+    padding: 0  2rem ;
+    /*flex-direction: row;*/
+    /*justify-content: space-between;*/
+    box-sizing: border-box;
+
+
+
+}
+#bar{
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+}
+#big-container-dashboard{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+}
+.list{
+    box-sizing: border-box;
+    height: 80vh;
+    /*background-color: gray;*/
+    margin-bottom: 2rem;
+    /*border-radius: 8px;*/
+    /*border: 2px solid #464F41;*/
+    padding: 0.5rem 2rem;
+}
+.list h2{
+    user-select: none;
+    border-bottom: black solid 2px;
+    text-align: center;
+}
+.list-elements div{
+    width: 48%;
+
+}
+.list-elements div h2{
+    width: 95%;
+
+}
+.lists-container{
+    width: 34%;
+    border: 2px solid #464F41;
+    color: #464F41;
+    background-color: #e4eedf;
+
+}
+.list-elements{
+    width: 65%;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: black;
+}
+
+#logout-button{
+    /*position: absolute;*/
+    /*right: 3rem;*/
+    /*top: 3rem;*/
+    /*margin: 0;*/
+    margin-bottom: 2rem;
+    position: relative;
+}
 
 
 /* Extra small devices (phones, 600px and down) */
@@ -136,6 +239,19 @@ button:hover{
     }
     .right{
         height: 50vh;
+    }
+    form{
+        width: 100%;
+    }
+    .lists-container{
+        width: 100%;
+
+    }
+    .list-elements{
+        width: 100%;
+    }
+    #big-container-dashboard{
+        flex-direction: column;
     }
 }
 
