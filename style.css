@@ -73,15 +73,18 @@ input{
     width: 100%;
     box-sizing: border-box;
     border-radius: 30px;
+
     padding: 10px 20px;
     border: none;
     outline: none;
     font-size: 1rem;
-    margin-bottom: 25px;
-    margin-top: 5px;
+    /*margin-bottom: 25px;*/
+    /*margin-top: 5px;*/
 }
 label{
     width: 100%;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 button:hover{
@@ -112,6 +115,7 @@ form{
 }
 #message-box  h2{
     user-select: none;
+
 }
 .open{
     display: block;
@@ -158,14 +162,40 @@ form{
     box-sizing: border-box;
     width: 100%;
 }
+.input-box{
+    /*height: 50px;*/
+    width: 100%;
+    box-sizing: border-box;
+    /*border-radius: 30px;*/
+    /*padding: 10px 20px;*/
+    border-radius:  5%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    /*margin-top: 5px;*/
+    position: relative;
+
+}
+i{
+    color: #464F41;
+   float: right;
+    right: 2%;
+    position: absolute;
+}
+i:hover{
+    color: #9fb199;
+    cursor: pointer;
+}
 .list{
     box-sizing: border-box;
     height: 80vh;
     /*background-color: gray;*/
-    margin-bottom: 2rem;
+    /*margin-bottom: 2rem;*/
     /*border-radius: 8px;*/
     /*border: 2px solid #464F41;*/
     padding: 0.5rem 2rem;
+    overflow-y: auto;
 }
 .list h2{
     user-select: none;
@@ -185,6 +215,7 @@ form{
     border: 2px solid #464F41;
     color: #464F41;
     background-color: #e4eedf;
+    position: relative;
 
 }
 .list-elements{
@@ -194,6 +225,28 @@ form{
     flex-direction: row;
     justify-content: space-between;
     color: black;
+
+}
+.list-element{
+    background-color: white;
+    border: #464F41 solid 2px;
+    height: 40px;
+  padding: 2% 5%;
+    margin-top: 5px;
+    line-height: 40px;
+    display: flex;
+    justify-content: stretch;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+.list-element i{
+    line-height: 40px;
+    /*font-size: larger;*/
+}
+h3{
+    margin: 0;
+    width: 80%;
 }
 
 #logout-button{

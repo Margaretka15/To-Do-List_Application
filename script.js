@@ -23,6 +23,7 @@ let dashboardDisplayed = false;
 let listsContainer;
 let listElements;
 let list;
+let numberOfLists;
 // let logoutButton;
 function showMessage(e)
 {
@@ -32,7 +33,7 @@ function showMessage(e)
     {
         b.style.display = "flex";
     }
-    if(!executed)
+    if (!executed)
     {
         form = document.createElement("form");
         messageTitle = document.createElement("h2");
@@ -67,7 +68,6 @@ function showMessage(e)
     }
 
 
-
     let element = e.target;
     if (element.id === "log-in-btn")
     {
@@ -81,8 +81,8 @@ function showMessage(e)
     function loginMessage()
     {
 
-       messageTitle.innerText = "Log in";
-       submitButton.innerText = "Log in";
+        messageTitle.innerText = "Log in";
+        submitButton.innerText = "Log in";
 
     }
 
@@ -99,7 +99,7 @@ function displayDashboard(e)
     // console.log(e.target.nodeName);
     closeMessage(e);
     mainSection.style.display = "none";
-    if(!dashboardDisplayed)
+    if (!dashboardDisplayed)
     {
         dashboardSection = document.createElement("section");
         dashboardSection.setAttribute("id", "dashboard-section");
@@ -121,7 +121,36 @@ function displayDashboard(e)
         listsContainer = document.createElement("div");
         listsContainer.classList.add("lists-container");
         listsContainer.classList.add("list");
-        listsContainer.innerHTML = "<div><h2> Your lists: </h2> </div>"
+        listsContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
+            "<div id = \"list-box\" class = \"left-list-box\"> </div>"+
+        "<div id='input-box' class='input-box'> <input type='text' id = 'list-title' placeholder='Create new list here!'> </div>";
+        // let listBox = document.getElementById("list-box");
+        let addListButton = document.createElement("i");
+        addListButton.classList.add("fa");
+        addListButton.classList.add("fa-plus-circle");
+        addListButton.classList.add("fa-3x");
+
+        setTimeout(function(){
+           let inputBar = document.getElementById("input-box");
+            inputBar.appendChild(addListButton);
+            inputBar.addEventListener("keypress",
+                (e) =>
+                {
+                    if (e.key === 'Enter')
+                    {
+                        createNewList();
+                    }
+
+                });
+        },0);
+        // listsContainer.appendChild(addListButton);
+
+        setTimeout(function(){
+            let titleInputField = document.getElementById("list-title");
+            console.log(titleInputField);
+        }, 0);
+
+        addListButton.addEventListener("click", createNewList);
 
         listElements = document.createElement("div");
         listElements.classList.add("list-elements");
@@ -143,6 +172,50 @@ function displayDashboard(e)
     }
 
 }
+
+function createNewList()
+{
+
+   let title = document.getElementById("list-title").value;
+   if(title ==="")
+       return;
+
+    let newList = document.createElement("div");
+    newList.classList.add("list-element");
+
+
+   document.getElementById("list-title").value = "";
+   newList.innerHTML = "<h3>" + title + "</h3> " +
+       "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>" ;
+
+    newList.addEventListener("click", editList);
+
+   listsContainer.appendChild(newList);
+
+}
+function editList(e){
+    let element = e.target;
+    console.log(element.parentElement);
+    if(element.id === "trash-icon")
+    {
+        removeList(element.parentElement);
+    }
+    else
+    {
+        showList();
+    }
+}
+function showList()
+{
+    console.log("you tried to display list");
+}
+function removeList(element)
+{
+    element.parentElement.removeChild(element);
+    console.log("you tried to remove list");
+
+}
+
 function logout()
 {
     dashboardSection.style.display = "none";
@@ -150,9 +223,10 @@ function logout()
     // logoutButton.display = "none";
 
 }
+
 function closeMessage(e)
 {
-    if(e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
+    if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
     {
         message.style.display = "none";
 
