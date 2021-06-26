@@ -14,8 +14,14 @@ shadowBackgroundBox.addEventListener("click", closeMessage);
 // message.addEventListener("click", close);
 
 // document.addEventListener("click", (e) => { console.log(e.target)})
+// localStorage.clear();
+if (localStorage.getItem("numberOfUsers") === null)
+    localStorage.setItem("numberOfUsers", "0");
 
-let executed = false;
+// console.log(localStorage.getItem("numberOfUsers"));
+let messageDisplayed = false;
+let signInFormDisplayed = false;
+let loginFormDisplayed = false;
 let form;
 let messageTitle;
 let submitButton;
@@ -23,7 +29,9 @@ let dashboardDisplayed = false;
 let listsContainer;
 let listElements;
 let list;
+let signInBox;
 let numberOfLists;
+
 // let logoutButton;
 function showMessage(e)
 {
@@ -33,71 +41,111 @@ function showMessage(e)
     {
         b.style.display = "flex";
     }
-    if (!executed)
+
+    if (!messageDisplayed) ///
     {
         form = document.createElement("form");
         messageTitle = document.createElement("h2");
         message.appendChild(messageTitle);
         message.appendChild(form);
-
-        let userName = document.createElement("input");
-        userName.type = "text";
-        userName.id = "user-name";
-        userName.placeholder = "E-mail";
-        let userNameLabel = document.createElement("label");
-        userNameLabel.innerText = "Enter username or e-mail:"
-        form.appendChild(userNameLabel);
-        form.appendChild(userName);
-
-        let userPass = document.createElement("input");
-        userPass.type = "password";
-        userPass.id = "user-pass";
-        userPass.placeholder = "Password";
-        let userPassLabel = document.createElement("label");
-        userPassLabel.innerText = "Enter password:"
-        form.appendChild(userPassLabel);
-        form.appendChild(userPass);
-
-        submitButton = document.createElement("button");
-        submitButton.classList.add("light");
-        submitButton.margin = "auto";
-        submitButton.addEventListener("click", displayDashboard);
-        form.appendChild(submitButton);
-
-        executed = true;
+        messageDisplayed = true;
     }
-
 
     let element = e.target;
     if (element.id === "log-in-btn")
     {
-        loginMessage();
+        displayLoginForm();
     }
     else if (element.id === "sign-in-btn")
     {
-        signInMessage();
+        displaySignInForm();
     }
 
-    function loginMessage()
+    function displayLoginForm()
     {
+        signInFormDisplayed = false;
+        if(!loginFormDisplayed)
+        {
+            messageTitle.innerText = "Log in";
+            removeFormElements(form);
 
-        messageTitle.innerText = "Log in";
-        submitButton.innerText = "Log in";
+            createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "log-in-element");
+            createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
+
+            submitButton = newButton(form, "light", "Log in");
+            submitButton.addEventListener("click", displayDashboard);
+
+            loginFormDisplayed = true;
+        }
 
     }
 
-    function signInMessage()
+    function displaySignInForm()
     {
         messageTitle.innerText = "Sign in";
-        submitButton.innerText = "Sign in";
+        loginFormDisplayed = false;
+        if(!signInFormDisplayed)
+        {
+            removeFormElements(form);
+
+            createInputField(form, "text", "name", "Your name", "Enter your name", "sign-in-element");
+            createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-in-element");
+            createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-in-element");
+            createInputField(form, "password", "password", "Password", "Enter your password", "sign-in-element");
+            createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-in-element");
+
+            submitButton = newButton(form, "light", "Sign in");
+            submitButton.margin = "auto";
+
+            signInFormDisplayed = true;
+
+
+            submitButton.addEventListener("click", newUser);
+        }
+
     }
 }
 
+function createInputField(parentNode, type, id, placeholder, label, className)
+{
+    let newInputField = document.createElement("input");
+    newInputField.type = type;
+    newInputField.id = id;
+    newInputField.placeholder = placeholder;
+    newInputField.classList.add(className);
+
+    let newLabel = document.createElement("label");
+    newLabel.innerText = label;
+    newLabel.classList.add(className);
+    parentNode.appendChild(newLabel);
+    parentNode.appendChild(newInputField);
+}
+
+function removeFormElements(form)
+{
+    while (form.lastElementChild)
+    {
+        form.removeChild(form.lastElementChild);
+    }
+}
+function newButton(parent, className, innerText)
+{
+    let button = document.createElement("button");
+    button.type = "button";
+    button.classList.add("light");
+    button.margin = "auto";
+    button.innerText = innerText;
+    form.appendChild(button);
+    return button;
+}
 function displayDashboard(e)
 {
-    e.preventDefault();
-    // console.log(e.target.nodeName);
-    closeMessage(e);
+    if (e !== undefined)
+    {
+        e.preventDefault();
+        // console.log(e.target.nodeName);
+        closeMessage(e);
+    }
     mainSection.style.display = "none";
     if (!dashboardDisplayed)
     {
@@ -122,16 +170,17 @@ function displayDashboard(e)
         listsContainer.classList.add("lists-container");
         listsContainer.classList.add("list");
         listsContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
-            "<div id = \"list-box\" class = \"left-list-box\"> </div>"+
-        "<div id='input-box' class='input-box'> <input type='text' id = 'list-title' placeholder='Create new list here!'> </div>";
+            "<div id = \"list-box\" class = \"left-list-box\"> </div>" +
+            "<div id='input-box' class='input-box'> <input type='text' id = 'list-title' placeholder='Create new list here!'> </div>";
         // let listBox = document.getElementById("list-box");
         let addListButton = document.createElement("i");
         addListButton.classList.add("fa");
         addListButton.classList.add("fa-plus-circle");
         addListButton.classList.add("fa-3x");
 
-        setTimeout(function(){
-           let inputBar = document.getElementById("input-box");
+        setTimeout(function ()
+        {
+            let inputBar = document.getElementById("input-box");
             inputBar.appendChild(addListButton);
             inputBar.addEventListener("keypress",
                 (e) =>
@@ -142,10 +191,11 @@ function displayDashboard(e)
                     }
 
                 });
-        },0);
+        }, 0);
         // listsContainer.appendChild(addListButton);
 
-        setTimeout(function(){
+        setTimeout(function ()
+        {
             let titleInputField = document.getElementById("list-title");
             console.log(titleInputField);
         }, 0);
@@ -176,27 +226,31 @@ function displayDashboard(e)
 function createNewList()
 {
 
-   let title = document.getElementById("list-title").value;
-   if(title ==="")
-       return;
+    let title = document.getElementById("list-title").value;
+    if (title === "")
+        return;
 
     let newList = document.createElement("div");
     newList.classList.add("list-element");
 
+    localStorage.setItem("title1", title);
+    console.log(localStorage.getItem("title1"));
 
-   document.getElementById("list-title").value = "";
-   newList.innerHTML = "<h3>" + title + "</h3> " +
-       "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>" ;
+    document.getElementById("list-title").value = "";
+    newList.innerHTML = "<h3>" + title + "</h3> " +
+        "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
 
     newList.addEventListener("click", editList);
 
-   listsContainer.appendChild(newList);
+    listsContainer.appendChild(newList);
 
 }
-function editList(e){
+
+function editList(e)
+{
     let element = e.target;
     console.log(element.parentElement);
-    if(element.id === "trash-icon")
+    if (element.id === "trash-icon")
     {
         removeList(element.parentElement);
     }
@@ -205,14 +259,34 @@ function editList(e){
         showList();
     }
 }
+
 function showList()
 {
     console.log("you tried to display list");
 }
+
 function removeList(element)
 {
     element.parentElement.removeChild(element);
     console.log("you tried to remove list");
+
+}
+
+function newUser()
+{
+    let userName = document.getElementById("email").value;
+    let userPassword = document.getElementById("password").value;
+    if (localStorage.getItem(userName) === null)
+    {
+        localStorage.setItem(userName, userPassword);
+        let numberOfUsers = parseInt(localStorage.getItem("numberOfUsers")) + 1;
+        console.log(numberOfUsers);
+        localStorage.setItem("numberOfUsers", numberOfUsers.toString());
+        console.log(localStorage.getItem("numberOfUsers"));
+        displayDashboard();
+    }
+    else
+        console.log("juz jest taki uzytkownik");
 
 }
 
