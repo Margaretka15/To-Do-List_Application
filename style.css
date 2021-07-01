@@ -200,14 +200,21 @@ i:hover{
 .list h2{
     user-select: none;
     border-bottom: black solid 2px;
+    color: #464F41;
     text-align: center;
+
 }
 .list-elements div{
-    width: 48%;
+    width: 100%;
+    /*display: flex;*/
+    /*justify-content:  center;*/
 
 }
 .list-elements div h2{
     width: 95%;
+
+    margin-left: auto;
+    margin-right: auto;
 
 }
 .lists-container{
@@ -222,11 +229,26 @@ i:hover{
     width: 65%;
     background-color: white;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    /*justify-content: space-between;*/
     color: black;
 
 }
+h1, h2, h3{
+    user-select: none;
+}
+#right-container div{
+    display: flex;
+    flex-direction: row;
+}
+.list-elements h1{
+    font-size: 2rem;
+    margin-bottom:  0;
+    border-bottom: solid 2px #464F41;
+    color: #464F41;
+    text-align: center;
+}
+
 .list-element{
     background-color: white;
     border: #464F41 solid 2px;

@@ -27,9 +27,8 @@ let messageTitle;
 let submitButton;
 let dashboardDisplayed = false;
 let listsContainer;
-let listElements;
+// let listElements;
 let list;
-let signInBox;
 let numberOfLists;
 
 // let logoutButton;
@@ -147,6 +146,7 @@ function displayDashboard(e)
         closeMessage(e);
     }
     mainSection.style.display = "none";
+    // document.body.removeChild(mainSection);
     if (!dashboardDisplayed)
     {
         dashboardSection = document.createElement("section");
@@ -162,9 +162,7 @@ function displayDashboard(e)
         bar.appendChild(logoutButton);
         logoutButton.addEventListener("click", logout);
 
-        let bigContainer = document.createElement("div");
-        bigContainer.setAttribute("id", "big-container-dashboard");
-
+        /////list of lists on the left
 
         listsContainer = document.createElement("div");
         listsContainer.classList.add("lists-container");
@@ -177,6 +175,16 @@ function displayDashboard(e)
         addListButton.classList.add("fa");
         addListButton.classList.add("fa-plus-circle");
         addListButton.classList.add("fa-3x");
+
+        //// lists content on the right
+        let bigContainer = document.createElement("div");
+        bigContainer.setAttribute("id", "big-container-dashboard");
+        let rightContainer = document.createElement("div");
+        rightContainer.setAttribute("ID", "right-container");
+
+        bigContainer.appendChild(listsContainer);
+        bigContainer.appendChild(rightContainer);
+        dashboardSection.appendChild(bigContainer);
 
         setTimeout(function ()
         {
@@ -194,26 +202,14 @@ function displayDashboard(e)
         }, 0);
         // listsContainer.appendChild(addListButton);
 
+
         setTimeout(function ()
         {
             let titleInputField = document.getElementById("list-title");
-            console.log(titleInputField);
+          //  console.log(titleInputField);
         }, 0);
 
         addListButton.addEventListener("click", createNewList);
-
-        listElements = document.createElement("div");
-        listElements.classList.add("list-elements");
-        listElements.classList.add("list");
-        listElements.innerHTML = "<div><h2> To do: </h2> </div> <div> <h2> Done: </h2>  </div>";
-
-        bigContainer.appendChild(listsContainer);
-        bigContainer.appendChild(listElements);
-        dashboardSection.appendChild(bigContainer);
-
-
-        // dashboardSection.
-
         dashboardDisplayed = true;
     }
     else
@@ -243,26 +239,49 @@ function createNewList()
     newList.addEventListener("click", editList);
 
     listsContainer.appendChild(newList);
+    showList(newList);
 
 }
 
 function editList(e)
 {
     let element = e.target;
-    console.log(element.parentElement);
+    // console.log(element.parentElement);
     if (element.id === "trash-icon")
     {
         removeList(element.parentElement);
     }
     else
     {
-        showList();
+        showList(element);
     }
 }
 
-function showList()
+function showList(clickedElement)
 {
-    console.log("you tried to display list");
+   // let element = e.target;
+
+    let listTitle;
+
+    if(clickedElement.nodeName === "H3")
+    {
+       listTitle = clickedElement.innerText;
+
+    }
+    else
+    {
+        listTitle = clickedElement.querySelector("H3").innerText;
+    }
+    let rightContainer = document.getElementById("right-container");
+    rightContainer.classList.add("list-elements");
+    rightContainer.classList.add("list");
+
+    if(rightContainer.hasChildNodes())
+    {
+        rightContainer.removeChild(rightContainer.lastElementChild);
+    }
+    rightContainer.innerHTML = "<h1 onclick='editElement(this)'> " +  listTitle + " </h1> <div> <div id='to-do-list'><h2> To do: </h2> </div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
+
 }
 
 function removeList(element)
@@ -292,11 +311,13 @@ function newUser()
 
 function logout()
 {
+    // document.body.removeChild(dashboardSection);
     dashboardSection.style.display = "none";
     mainSection.style.display = "flex";
     // logoutButton.display = "none";
 
 }
+
 
 function closeMessage(e)
 {
@@ -309,5 +330,15 @@ function closeMessage(e)
             b.style.display = "none";
         }
     }
+
+}
+
+function editElement(element)
+{
+    element.style.display = "none";
+    createInputField(element.parentElement, "text", "editTitleInputField", "", "", "input");
+    element.innerText = "zmienione";
+    console.log(element.parentElement);
+
 
 }
