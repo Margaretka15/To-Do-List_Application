@@ -81,12 +81,24 @@ input{
     /*margin-bottom: 25px;*/
     /*margin-top: 5px;*/
 }
+.edit-input{
+    font-size: 2rem;
+    margin-bottom:  0;
+    border-radius: 0;
+    border-bottom: solid 2px #464F41;
+    color: #464F41;
+    text-align: center;
+    height: 2.5rem;
+}
 label{
     width: 100%;
     margin-top: 10px;
     margin-bottom: 5px;
 }
+#big-container-dashboard h1{
+    margin: 0;
 
+}
 button:hover{
     box-shadow: 0 0 10px 10px white ;
 }
@@ -160,6 +172,7 @@ form{
     flex-direction: row;
     justify-content: space-between;
     box-sizing: border-box;
+    /*padding-top: 0.7rem;*/
     width: 100%;
 }
 .input-box{
@@ -236,6 +249,9 @@ i:hover{
 }
 h1, h2, h3{
     user-select: none;
+}
+#right-container{
+    padding-top: 1rem;
 }
 #right-container div{
     display: flex;

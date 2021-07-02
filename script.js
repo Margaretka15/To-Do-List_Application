@@ -1,16 +1,9 @@
-let loginButton = document.getElementById("log-in-btn");
-let signInButton = document.getElementById("sign-in-btn");
 
-let mainSection = document.getElementById("main-section");
+// let mainSection = document.getElementById("main-section");
+let mainSection;
 let dashboardSection;
-
-let message = document.getElementById("message-box");
-let shadowBoxes = document.getElementsByClassName("big-box");
-let shadowBackgroundBox = document.getElementById("big-message-container");
-
-loginButton.addEventListener("click", showMessage);
-signInButton.addEventListener("click", showMessage);
-shadowBackgroundBox.addEventListener("click", closeMessage);
+let message;
+let shadowBoxes;
 // message.addEventListener("click", close);
 
 // document.addEventListener("click", (e) => { console.log(e.target)})
@@ -32,9 +25,63 @@ let list;
 let numberOfLists;
 
 // let logoutButton;
+displayMainSection();
+
+function displayMainSection()
+{
+    mainSection = document.createElement("div");
+    mainSection.setAttribute("id", "main-section");
+
+    loginFormDisplayed = false;
+    signInFormDisplayed = false;
+    messageDisplayed = false;
+    dashboardDisplayed = false;
+    mainSection.innerHTML = " <div class ='container left'>" +
+        " <div class = 'box'> " +
+        "<h1>Plan your time </h1>" +
+        " <h2>Improve your life</h2>" +
+        " <p>Welcome! So nice to see you here but this is just a placeholder. Wait for the actual content" +
+        ":P <br><br> \“You create opportunities by performing, not complaining.\”</p> " +
+        " </div> " +
+        " <div class='image-div'></div>" +
+        "</div> " +
+        " <div class='container right'>" +
+        "   <button id='log-in-btn'>Log in</button>" +
+        "<button id='sign-in-btn'>Sign in</button> " +
+
+        "  </div>  </div>  " +
+
+
+        " <div class='big-box gray-box'> </div>" +
+        "    <div class='big-box' id='big-message-container'>" +
+        "        <div id='message-box'></div> " +
+        "</div>";
+
+    setTimeout(function (){
+        let loginButton = document.getElementById("log-in-btn");
+        let signInButton = document.getElementById("sign-in-btn");
+
+
+
+        loginButton.addEventListener("click", showMessage);
+        signInButton.addEventListener("click", showMessage);
+
+    }, 0);
+
+
+    document.body.appendChild(mainSection);
+}
+
+
+//// do ogarnięcia jak to zrobić xDD
+
 function showMessage(e)
 {
+    message = document.getElementById("message-box");
 
+    shadowBoxes = document.getElementsByClassName("big-box");
+    let shadowBackgroundBox = document.getElementById("big-message-container");
+    shadowBackgroundBox.addEventListener("click", closeMessage);
     message.style.display = "block";
     for (let b of shadowBoxes)
     {
@@ -53,6 +100,7 @@ function showMessage(e)
     let element = e.target;
     if (element.id === "log-in-btn")
     {
+
         displayLoginForm();
     }
     else if (element.id === "sign-in-btn")
@@ -63,7 +111,7 @@ function showMessage(e)
     function displayLoginForm()
     {
         signInFormDisplayed = false;
-        if(!loginFormDisplayed)
+        if (!loginFormDisplayed)
         {
             messageTitle.innerText = "Log in";
             removeFormElements(form);
@@ -83,7 +131,7 @@ function showMessage(e)
     {
         messageTitle.innerText = "Sign in";
         loginFormDisplayed = false;
-        if(!signInFormDisplayed)
+        if (!signInFormDisplayed)
         {
             removeFormElements(form);
 
@@ -102,6 +150,21 @@ function showMessage(e)
             submitButton.addEventListener("click", newUser);
         }
 
+    }
+}
+function closeMessage(e)
+{
+    if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
+    {
+        message.style.display = "none";
+        // document.body.removeChild(message);
+        // messageDisplayed = false;
+        // loginFormDisplayed = false;
+        // signInFormDisplayed = false;
+        for (let b of shadowBoxes)
+        {
+            b.style.display = "none";
+        }
     }
 }
 
@@ -127,6 +190,7 @@ function removeFormElements(form)
         form.removeChild(form.lastElementChild);
     }
 }
+
 function newButton(parent, className, innerText)
 {
     let button = document.createElement("button");
@@ -137,6 +201,8 @@ function newButton(parent, className, innerText)
     form.appendChild(button);
     return button;
 }
+
+
 function displayDashboard(e)
 {
     if (e !== undefined)
@@ -145,8 +211,8 @@ function displayDashboard(e)
         // console.log(e.target.nodeName);
         closeMessage(e);
     }
-    mainSection.style.display = "none";
-    // document.body.removeChild(mainSection);
+  //  mainSection.style.display = "none";
+    document.body.removeChild(mainSection);
     if (!dashboardDisplayed)
     {
         dashboardSection = document.createElement("section");
@@ -206,7 +272,7 @@ function displayDashboard(e)
         setTimeout(function ()
         {
             let titleInputField = document.getElementById("list-title");
-          //  console.log(titleInputField);
+            //  console.log(titleInputField);
         }, 0);
 
         addListButton.addEventListener("click", createNewList);
@@ -259,13 +325,13 @@ function editList(e)
 
 function showList(clickedElement)
 {
-   // let element = e.target;
+    // let element = e.target;
 
     let listTitle;
 
-    if(clickedElement.nodeName === "H3")
+    if (clickedElement.nodeName === "H3")
     {
-       listTitle = clickedElement.innerText;
+        listTitle = clickedElement.innerText;
 
     }
     else
@@ -276,11 +342,11 @@ function showList(clickedElement)
     rightContainer.classList.add("list-elements");
     rightContainer.classList.add("list");
 
-    if(rightContainer.hasChildNodes())
+    if (rightContainer.hasChildNodes())
     {
         rightContainer.removeChild(rightContainer.lastElementChild);
     }
-    rightContainer.innerHTML = "<h1 onclick='editElement(this)'> " +  listTitle + " </h1> <div> <div id='to-do-list'><h2> To do: </h2> </div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
+    rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + listTitle + " </h1> <div> <div id='to-do-list'><h2> To do: </h2> </div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
 
 }
 
@@ -311,34 +377,43 @@ function newUser()
 
 function logout()
 {
-    // document.body.removeChild(dashboardSection);
-    dashboardSection.style.display = "none";
-    mainSection.style.display = "flex";
-    // logoutButton.display = "none";
-
+    document.body.removeChild(dashboardSection);
+    displayMainSection();
 }
 
 
-function closeMessage(e)
-{
-    if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
-    {
-        message.style.display = "none";
 
-        for (let b of shadowBoxes)
-        {
-            b.style.display = "none";
-        }
-    }
 
-}
-
-function editElement(element)
+function editTitle(element)
 {
     element.style.display = "none";
+    // let inputField = document.createElement("input");
+    // inputField.setAttribute("ID", "editTitleInputField");
+    // inputField.classList.add("input");
+    ///nie mogę się zdecydować xD
     createInputField(element.parentElement, "text", "editTitleInputField", "", "", "input");
-    element.innerText = "zmienione";
-    console.log(element.parentElement);
 
+    let inputField;
+    setTimeout(function ()
+    {
+        inputField = document.getElementById("editTitleInputField");
+        inputField.classList.add("edit-input");
+        inputField.value = element.innerText;
+        inputField.focus();
+        console.log(inputField);
+        element.parentElement.insertBefore(inputField, element);
+        inputField.addEventListener("keypress",
+            (e) =>
+            {
+                if (e.key === 'Enter')
+                {
+                    element.style.display = "block";
+                    element.innerText = inputField.value;
+                    element.parentElement.removeChild(inputField);
+                }
+
+            });
+
+    }, 0);
 
 }
