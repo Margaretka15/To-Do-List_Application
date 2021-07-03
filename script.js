@@ -1,4 +1,3 @@
-
 // let mainSection = document.getElementById("main-section");
 let mainSection;
 let dashboardSection;
@@ -56,20 +55,16 @@ function displayMainSection()
         "    <div class='big-box' id='big-message-container'>" +
         "        <div id='message-box'></div> " +
         "</div>";
-
-    setTimeout(function (){
-        let loginButton = document.getElementById("log-in-btn");
-        let signInButton = document.getElementById("sign-in-btn");
-
-
-
-        loginButton.addEventListener("click", showMessage);
-        signInButton.addEventListener("click", showMessage);
-
-    }, 0);
-
-
     document.body.appendChild(mainSection);
+
+    let loginButton = document.getElementById("log-in-btn");
+    let signInButton = document.getElementById("sign-in-btn");
+
+
+    loginButton.addEventListener("click", showMessage);
+    signInButton.addEventListener("click", showMessage);
+
+
 }
 
 
@@ -142,7 +137,7 @@ function showMessage(e)
             createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-in-element");
 
             submitButton = newButton(form, "light", "Sign in");
-            submitButton.margin = "auto";
+            // submitButton.margin = "auto";
 
             signInFormDisplayed = true;
 
@@ -152,6 +147,7 @@ function showMessage(e)
 
     }
 }
+
 function closeMessage(e)
 {
     if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
@@ -195,10 +191,10 @@ function newButton(parent, className, innerText)
 {
     let button = document.createElement("button");
     button.type = "button";
-    button.classList.add("light");
+    button.classList.add(className);
     button.margin = "auto";
     button.innerText = innerText;
-    form.appendChild(button);
+    parent.appendChild(button);
     return button;
 }
 
@@ -211,7 +207,7 @@ function displayDashboard(e)
         // console.log(e.target.nodeName);
         closeMessage(e);
     }
-  //  mainSection.style.display = "none";
+    //  mainSection.style.display = "none";
     document.body.removeChild(mainSection);
     if (!dashboardDisplayed)
     {
@@ -252,8 +248,7 @@ function displayDashboard(e)
         bigContainer.appendChild(rightContainer);
         dashboardSection.appendChild(bigContainer);
 
-        setTimeout(function ()
-        {
+
             let inputBar = document.getElementById("input-box");
             inputBar.appendChild(addListButton);
             inputBar.addEventListener("keypress",
@@ -265,7 +260,6 @@ function displayDashboard(e)
                     }
 
                 });
-        }, 0);
         // listsContainer.appendChild(addListButton);
 
 
@@ -382,34 +376,32 @@ function logout()
 }
 
 
-
-
-function editTitle(element)
+function editTitle(title)
 {
-    element.style.display = "none";
+    title.style.display = "none";
     // let inputField = document.createElement("input");
     // inputField.setAttribute("ID", "editTitleInputField");
     // inputField.classList.add("input");
     ///nie mogę się zdecydować xD
-    createInputField(element.parentElement, "text", "editTitleInputField", "", "", "input");
+    createInputField(title.parentElement, "text", "editTitleInputField", "", "", "input");
 
     let inputField;
     setTimeout(function ()
     {
         inputField = document.getElementById("editTitleInputField");
         inputField.classList.add("edit-input");
-        inputField.value = element.innerText;
+        inputField.value = title.innerText;
         inputField.focus();
         console.log(inputField);
-        element.parentElement.insertBefore(inputField, element);
+        title.parentElement.insertBefore(inputField, title);
         inputField.addEventListener("keypress",
             (e) =>
             {
                 if (e.key === 'Enter')
                 {
-                    element.style.display = "block";
-                    element.innerText = inputField.value;
-                    element.parentElement.removeChild(inputField);
+                    title.style.display = "block";
+                    title.innerText = inputField.value;
+                    title.parentElement.removeChild(inputField);
                 }
 
             });
