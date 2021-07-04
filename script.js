@@ -1,24 +1,24 @@
 let mainSection;
 let dashboardSection;
 
+// let numberOfUsers;
 
 
-
-// localStorage.clear();
+localStorage.clear();
 if (localStorage.getItem("numberOfUsers") === null)
     localStorage.setItem("numberOfUsers", "0");
-
+let userId = 0; //// potrzebne!! widoczne w wielu miejscach
 let messageDisplayed = false;
 
 let dashboardDisplayed = false;
-let listOfCategories;
+let categoriesOuterContainer;
 let list;
 
 displayMainSection();
-document.addEventListener("click", (e) =>
-{
-    console.log(e.target);
-});
+// document.addEventListener("click", (e) =>
+// {
+//     console.log(e.target);
+// });
 
 function displayMainSection()
 {
@@ -26,7 +26,7 @@ function displayMainSection()
     mainSection.setAttribute("id", "main-section");
 
 
-    messageDisplayed = false;
+    messageDisplayed = false; ////// trzeba to zrobić tak, żeby w widoku mobilnym nie dało się w to kliknąć drugi raz !!!
     dashboardDisplayed = false;
 
     mainSection.innerHTML = getMainSectionHTML();
@@ -62,13 +62,8 @@ function showMessage(e)
 
     mainSection.appendChild(messageOuterContainer);
 
-    // shadowBoxes = document.getElementsByClassName("big-box");
-    // // for (let b of shadowBoxes)
-    // // {
-    // //     b.style.display = "flex";
-    // // }
-
     let form = document.createElement("form");
+    form.id = "sign-in-form";
     let messageTitle = document.createElement("h2");
     let message = document.getElementById("message-box");
 
@@ -91,14 +86,13 @@ function showMessage(e)
 
         {
             messageTitle.innerText = "Log in";
-            removeFormElements(form);
+            removeAllChildrenElements(form);
 
             createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "log-in-element");
             createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
 
             let submitButton = newButton(form, "light", "Log in");
             submitButton.addEventListener("click", displayDashboard);
-
 
         }
 
@@ -108,7 +102,7 @@ function showMessage(e)
     {
         messageTitle.innerText = "Sign in";
 
-        removeFormElements(form);
+        removeAllChildrenElements(form);
 
         createInputField(form, "text", "name", "Your name", "Enter your name", "sign-in-element");
         createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-in-element");
@@ -118,7 +112,6 @@ function showMessage(e)
 
         let submitButton = newButton(form, "light", "Sign in");
 
-
         submitButton.addEventListener("click", newUser);
     }
 
@@ -127,10 +120,8 @@ function showMessage(e)
 
 function closeMessage(e)
 {
-
     if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
     {
-
         mainSection.removeChild(document.getElementById("big-message-container"));
         mainSection.removeChild(document.getElementById('outer-gray-box'));
     }
@@ -151,11 +142,11 @@ function createInputField(parentNode, type, id, placeholder, label, className)
     parentNode.appendChild(newInputField);
 }
 
-function removeFormElements(form)
+function removeAllChildrenElements(parent)
 {
-    while (form.lastElementChild)
+    while (parent.lastElementChild)
     {
-        form.removeChild(form.lastElementChild);
+        parent.removeChild(parent.lastElementChild);
     }
 }
 
@@ -181,27 +172,33 @@ function displayDashboard(e)
     document.body.removeChild(mainSection);
 
     dashboardSection = document.createElement("section");
-    dashboardSection.setAttribute("id", "dashboard-section");
+    dashboardSection.id = "dashboard-section";
     document.body.appendChild(dashboardSection);
-    let logoutButton = document.createElement("button");
+
     let bar = document.createElement("div");
+    let logoutButton = newButton(bar, 'button', "Log out");
+
     bar.setAttribute("id", "bar");
     dashboardSection.appendChild(bar);
+
     logoutButton.id = "logout-button";
-    logoutButton.innerText = "Log out";
-    logoutButton.setAttribute("id", "logout-button")
-    bar.appendChild(logoutButton);
+    // logoutButton.setAttribute("id", "logout-button");
+
     logoutButton.addEventListener("click", logout);
 
     /////list of categories on the left
+    ////to do - div inside, only for categories
 
-    listOfCategories = document.createElement("div");
-    listOfCategories.classList.add("categories-container");
-    listOfCategories.classList.add("list");
-    listOfCategories.innerHTML = "<div><h2> Your lists: </h2> </div>" +
-        "<div id = \"list-box\" class = \"left-list-box\"> </div>" +
+    categoriesOuterContainer = document.createElement("div");
+    categoriesOuterContainer.classList.add("categories-container");
+    categoriesOuterContainer.classList.add("list");
+    categoriesOuterContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
+        "<div class = \"left-list-box\"> </div>" +
         "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
-        "</div>";
+
+
+        "</div>" +
+    "<div  id = 'categories-box' class 'left-list-box'> </div>";
     let addListButton = document.createElement("i");
     addListButton.classList.add("fa");
     addListButton.classList.add("fa-plus-circle");
@@ -213,7 +210,7 @@ function displayDashboard(e)
     let rightContainer = document.createElement("div");
     rightContainer.setAttribute("ID", "right-container");
 
-    bigContainer.appendChild(listOfCategories);
+    bigContainer.appendChild(categoriesOuterContainer);
     bigContainer.appendChild(rightContainer);
     dashboardSection.appendChild(bigContainer);
 
@@ -252,24 +249,51 @@ function createNewCategory()
     if (title === "")
         return;
 
-    let newCategory = document.createElement("div");
-    newCategory.classList.add("list-element");
+    let numberOfCategories = localStorage.getItem("user"+userId+"numberOfCategories");
+    if(numberOfCategories === null)
+    {
+        localStorage.setItem("user"+userId+"numberOfCategories", "0");
+        numberOfCategories = 0;
+    }
+    else
+    {
+        numberOfCategories = parseInt(numberOfCategories) ;
+        localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
+    }
+    localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
+    displayAllCategories();
+    // showCategory(newCategory);
+}
+function displayAllCategories(id)
+{
+    let numberOfCategories = localStorage.getItem("user"+userId+"numberOfCategories");
+    if(numberOfCategories === null || numberOfCategories === "0")
+    {
+        return;
+    }
+    numberOfCategories = parseInt(numberOfCategories);
+    let categoriesContainer = document.getElementById("categories-box");
+    removeAllChildrenElements(categoriesContainer);
+    for (let i = 0; i < numberOfCategories; i++)
+    {
+        ///do something
+        let newCategory = document.createElement("div");
+        newCategory.classList.add("list-element");
+        let newTitle = localStorage.getItem("user"+userId+"category"+(numberOfCategories - 1 - i));
 
-    localStorage.setItem("title1", title);
-    console.log(localStorage.getItem("title1"));
+        document.getElementById("category-title").value = "";
+        newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
+            "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
 
-    document.getElementById("category-title").value = "";
-    newCategory.innerHTML = "<h3>" + title + "</h3> " +
-        "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
+        newCategory.addEventListener("click", editCategory);
 
-    newCategory.addEventListener("click", editList);
+        categoriesContainer.appendChild(newCategory);
+    }
 
-    listOfCategories.appendChild(newCategory);
-    showCategory(newCategory);
 
 }
 
-function editList(e)
+function editCategory(e)
 {
     let element = e.target;
     // console.log(element.parentElement);
@@ -310,28 +334,48 @@ function showCategory(clickedElement)
 
 }
 
-function removeCategory(element)
+function removeCategory(element) /////
 {
     element.parentElement.removeChild(element);
-    console.log("you tried to remove list");
+    // console.log("you tried to remove list");
 
 }
 
 function newUser()
 {
-    let userName = document.getElementById("email").value;
+    // let form = document.getElementById("sign-in-form");
+    let userName = document.getElementById("name").value;
+    let userSurname = document.getElementById("surname").value;
     let userPassword = document.getElementById("password").value;
+    let userEmail = document.getElementById("email").value;
     if (localStorage.getItem(userName) === null)
     {
-        localStorage.setItem(userName, userPassword);
+        let id = localStorage.getItem("numberOfUsers");
+        localStorage.setItem("user" + id, userName);
+        localStorage.setItem("user" + id + "surname", userSurname);
+        localStorage.setItem("user" + id + "pass", userPassword);
+        localStorage.setItem("user" + id + "email", userEmail);
+
+
         let numberOfUsers = parseInt(localStorage.getItem("numberOfUsers")) + 1;
-        console.log(numberOfUsers);
         localStorage.setItem("numberOfUsers", numberOfUsers.toString());
-        console.log(localStorage.getItem("numberOfUsers"));
+        printUserData(id);
         displayDashboard();
     }
     else
         console.log("juz jest taki uzytkownik");
+
+}
+
+function printUserData()
+{
+    let userName = localStorage.getItem("user" + userId);
+    console.log("User name: ", userName);
+    let userSurname = localStorage.getItem("user" + userId + "surname");
+    console.log("User surname: ", userSurname);
+    let userEmail = localStorage.getItem("user" + userId + "email");
+    console.log("User email: ", userEmail);
+
 
 }
 
@@ -355,7 +399,7 @@ function editTitle(title)
         inputField.classList.add("edit-input");
         inputField.value = title.innerText;
         inputField.focus();
-        console.log(inputField);
+        // console.log(inputField);
         title.parentElement.insertBefore(inputField, title);
         inputField.addEventListener("keypress",
             (e) =>
