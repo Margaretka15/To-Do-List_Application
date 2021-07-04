@@ -134,7 +134,7 @@ form{
 }
 
 .big-box{
-    display: none;
+    display: flex;
     height: 100%;
     width: 100%;
     position: absolute;
@@ -158,6 +158,9 @@ form{
     /*flex-direction: row;*/
     /*justify-content: space-between;*/
     box-sizing: border-box;
+    /*background-image: url("images/forest2.jpg");*/
+    /*background-size: cover;*/
+    height: 100vh;
 
 
 
@@ -230,7 +233,7 @@ i:hover{
     margin-right: auto;
 
 }
-.lists-container{
+.categories-container{
     width: 34%;
     border: 2px solid #464F41;
     color: #464F41;
@@ -334,7 +337,7 @@ h3{
     form{
         width: 100%;
     }
-    .lists-container{
+    .categories-container{
         width: 100%;
 
     }

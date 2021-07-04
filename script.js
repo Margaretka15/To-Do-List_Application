@@ -1,60 +1,35 @@
-// let mainSection = document.getElementById("main-section");
 let mainSection;
 let dashboardSection;
-let message;
-let shadowBoxes;
-// message.addEventListener("click", close);
 
-// document.addEventListener("click", (e) => { console.log(e.target)})
+
+
+
 // localStorage.clear();
 if (localStorage.getItem("numberOfUsers") === null)
     localStorage.setItem("numberOfUsers", "0");
 
-// console.log(localStorage.getItem("numberOfUsers"));
 let messageDisplayed = false;
-let signInFormDisplayed = false;
-let loginFormDisplayed = false;
-let form;
-let messageTitle;
-let submitButton;
-let dashboardDisplayed = false;
-let listsContainer;
-// let listElements;
-let list;
-let numberOfLists;
 
-// let logoutButton;
+let dashboardDisplayed = false;
+let listOfCategories;
+let list;
+
 displayMainSection();
+document.addEventListener("click", (e) =>
+{
+    console.log(e.target);
+});
 
 function displayMainSection()
 {
     mainSection = document.createElement("div");
     mainSection.setAttribute("id", "main-section");
 
-    loginFormDisplayed = false;
-    signInFormDisplayed = false;
+
     messageDisplayed = false;
     dashboardDisplayed = false;
-    mainSection.innerHTML = " <div class ='container left'>" +
-        " <div class = 'box'> " +
-        "<h1>Plan your time </h1>" +
-        " <h2>Improve your life</h2>" +
-        " <p>Welcome! So nice to see you here but this is just a placeholder. Wait for the actual content" +
-        ":P <br><br> \“You create opportunities by performing, not complaining.\”</p> " +
-        " </div> " +
-        " <div class='image-div'></div>" +
-        "</div> " +
-        " <div class='container right'>" +
-        "   <button id='log-in-btn'>Log in</button>" +
-        "<button id='sign-in-btn'>Sign in</button> " +
 
-        "  </div>  </div>  " +
-
-
-        " <div class='big-box gray-box'> </div>" +
-        "    <div class='big-box' id='big-message-container'>" +
-        "        <div id='message-box'></div> " +
-        "</div>";
+    mainSection.innerHTML = getMainSectionHTML();
     document.body.appendChild(mainSection);
 
     let loginButton = document.getElementById("log-in-btn");
@@ -67,35 +42,43 @@ function displayMainSection()
 
 }
 
-
-//// do ogarnięcia jak to zrobić xDD
-
 function showMessage(e)
 {
-    message = document.getElementById("message-box");
+    let outerGrayBox = document.createElement("div");
+    outerGrayBox.setAttribute("id", "outer-gray-box");
 
-    shadowBoxes = document.getElementsByClassName("big-box");
-    let shadowBackgroundBox = document.getElementById("big-message-container");
-    shadowBackgroundBox.addEventListener("click", closeMessage);
-    message.style.display = "block";
-    for (let b of shadowBoxes)
-    {
-        b.style.display = "flex";
-    }
+    outerGrayBox.classList.add("big-box");
 
-    if (!messageDisplayed) ///
-    {
-        form = document.createElement("form");
-        messageTitle = document.createElement("h2");
-        message.appendChild(messageTitle);
-        message.appendChild(form);
-        messageDisplayed = true;
-    }
+    outerGrayBox.classList.add("gray-box");
+
+    mainSection.appendChild(outerGrayBox);
+
+
+    let messageOuterContainer = document.createElement("div");
+    messageOuterContainer.classList.add("big-box");
+    messageOuterContainer.setAttribute("id", "big-message-container");
+    messageOuterContainer.addEventListener("click", closeMessage);
+    messageOuterContainer.innerHTML = "<div id=\"message-box\" style=\"display: block\"></div>";
+
+    mainSection.appendChild(messageOuterContainer);
+
+    // shadowBoxes = document.getElementsByClassName("big-box");
+    // // for (let b of shadowBoxes)
+    // // {
+    // //     b.style.display = "flex";
+    // // }
+
+    let form = document.createElement("form");
+    let messageTitle = document.createElement("h2");
+    let message = document.getElementById("message-box");
+
+    message.appendChild(messageTitle);
+    message.appendChild(form);
+    messageDisplayed = true;
 
     let element = e.target;
     if (element.id === "log-in-btn")
     {
-
         displayLoginForm();
     }
     else if (element.id === "sign-in-btn")
@@ -105,8 +88,7 @@ function showMessage(e)
 
     function displayLoginForm()
     {
-        signInFormDisplayed = false;
-        if (!loginFormDisplayed)
+
         {
             messageTitle.innerText = "Log in";
             removeFormElements(form);
@@ -114,10 +96,10 @@ function showMessage(e)
             createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "log-in-element");
             createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
 
-            submitButton = newButton(form, "light", "Log in");
+            let submitButton = newButton(form, "light", "Log in");
             submitButton.addEventListener("click", displayDashboard);
 
-            loginFormDisplayed = true;
+
         }
 
     }
@@ -125,42 +107,32 @@ function showMessage(e)
     function displaySignInForm()
     {
         messageTitle.innerText = "Sign in";
-        loginFormDisplayed = false;
-        if (!signInFormDisplayed)
-        {
-            removeFormElements(form);
 
-            createInputField(form, "text", "name", "Your name", "Enter your name", "sign-in-element");
-            createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-in-element");
-            createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-in-element");
-            createInputField(form, "password", "password", "Password", "Enter your password", "sign-in-element");
-            createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-in-element");
+        removeFormElements(form);
 
-            submitButton = newButton(form, "light", "Sign in");
-            // submitButton.margin = "auto";
+        createInputField(form, "text", "name", "Your name", "Enter your name", "sign-in-element");
+        createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-in-element");
+        createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-in-element");
+        createInputField(form, "password", "password", "Password", "Enter your password", "sign-in-element");
+        createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-in-element");
 
-            signInFormDisplayed = true;
+        let submitButton = newButton(form, "light", "Sign in");
 
 
-            submitButton.addEventListener("click", newUser);
-        }
-
+        submitButton.addEventListener("click", newUser);
     }
+
+
 }
 
 function closeMessage(e)
 {
+
     if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
     {
-        message.style.display = "none";
-        // document.body.removeChild(message);
-        // messageDisplayed = false;
-        // loginFormDisplayed = false;
-        // signInFormDisplayed = false;
-        for (let b of shadowBoxes)
-        {
-            b.style.display = "none";
-        }
+
+        mainSection.removeChild(document.getElementById("big-message-container"));
+        mainSection.removeChild(document.getElementById('outer-gray-box'));
     }
 }
 
@@ -204,102 +176,96 @@ function displayDashboard(e)
     if (e !== undefined)
     {
         e.preventDefault();
-        // console.log(e.target.nodeName);
-        closeMessage(e);
+        // closeMessage(e);
     }
-    //  mainSection.style.display = "none";
     document.body.removeChild(mainSection);
-    if (!dashboardDisplayed)
-    {
-        dashboardSection = document.createElement("section");
-        dashboardSection.setAttribute("id", "dashboard-section");
-        document.body.appendChild(dashboardSection);
-        let logoutButton = document.createElement("button");
-        let bar = document.createElement("div");
-        bar.setAttribute("id", "bar");
-        dashboardSection.appendChild(bar);
-        logoutButton.id = "logout-button";
-        logoutButton.innerText = "Log out";
-        logoutButton.setAttribute("id", "logout-button")
-        bar.appendChild(logoutButton);
-        logoutButton.addEventListener("click", logout);
 
-        /////list of lists on the left
+    dashboardSection = document.createElement("section");
+    dashboardSection.setAttribute("id", "dashboard-section");
+    document.body.appendChild(dashboardSection);
+    let logoutButton = document.createElement("button");
+    let bar = document.createElement("div");
+    bar.setAttribute("id", "bar");
+    dashboardSection.appendChild(bar);
+    logoutButton.id = "logout-button";
+    logoutButton.innerText = "Log out";
+    logoutButton.setAttribute("id", "logout-button")
+    bar.appendChild(logoutButton);
+    logoutButton.addEventListener("click", logout);
 
-        listsContainer = document.createElement("div");
-        listsContainer.classList.add("lists-container");
-        listsContainer.classList.add("list");
-        listsContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
-            "<div id = \"list-box\" class = \"left-list-box\"> </div>" +
-            "<div id='input-box' class='input-box'> <input type='text' id = 'list-title' placeholder='Create new list here!'> </div>";
-        // let listBox = document.getElementById("list-box");
-        let addListButton = document.createElement("i");
-        addListButton.classList.add("fa");
-        addListButton.classList.add("fa-plus-circle");
-        addListButton.classList.add("fa-3x");
+    /////list of categories on the left
 
-        //// lists content on the right
-        let bigContainer = document.createElement("div");
-        bigContainer.setAttribute("id", "big-container-dashboard");
-        let rightContainer = document.createElement("div");
-        rightContainer.setAttribute("ID", "right-container");
+    listOfCategories = document.createElement("div");
+    listOfCategories.classList.add("categories-container");
+    listOfCategories.classList.add("list");
+    listOfCategories.innerHTML = "<div><h2> Your lists: </h2> </div>" +
+        "<div id = \"list-box\" class = \"left-list-box\"> </div>" +
+        "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
+        "</div>";
+    let addListButton = document.createElement("i");
+    addListButton.classList.add("fa");
+    addListButton.classList.add("fa-plus-circle");
+    addListButton.classList.add("fa-3x");
 
-        bigContainer.appendChild(listsContainer);
-        bigContainer.appendChild(rightContainer);
-        dashboardSection.appendChild(bigContainer);
+    //// lists content on the right
+    let bigContainer = document.createElement("div");
+    bigContainer.setAttribute("id", "big-container-dashboard");
+    let rightContainer = document.createElement("div");
+    rightContainer.setAttribute("ID", "right-container");
 
-
-            let inputBar = document.getElementById("input-box");
-            inputBar.appendChild(addListButton);
-            inputBar.addEventListener("keypress",
-                (e) =>
-                {
-                    if (e.key === 'Enter')
-                    {
-                        createNewList();
-                    }
-
-                });
-        // listsContainer.appendChild(addListButton);
+    bigContainer.appendChild(listOfCategories);
+    bigContainer.appendChild(rightContainer);
+    dashboardSection.appendChild(bigContainer);
 
 
-        setTimeout(function ()
+    let inputBar = document.getElementById("input-box");
+    inputBar.appendChild(addListButton);
+    inputBar.addEventListener("keypress",
+        (e) =>
         {
-            let titleInputField = document.getElementById("list-title");
-            //  console.log(titleInputField);
-        }, 0);
+            if (e.key === 'Enter')
+            {
+                createNewCategory();
+            }
 
-        addListButton.addEventListener("click", createNewList);
-        dashboardDisplayed = true;
-    }
-    else
+        });
+    // listsContainer.appendChild(addListButton);
+
+
+    setTimeout(function ()
     {
-        dashboardSection.style.display = "block";
-    }
+        let titleInputField = document.getElementById("category-title");
+        //  console.log(titleInputField);
+    }, 0);
+
+    addListButton.addEventListener("click", createNewCategory);
+    dashboardDisplayed = true;
+    //////?????
+
 
 }
 
-function createNewList()
+function createNewCategory()
 {
 
-    let title = document.getElementById("list-title").value;
+    let title = document.getElementById("category-title").value;
     if (title === "")
         return;
 
-    let newList = document.createElement("div");
-    newList.classList.add("list-element");
+    let newCategory = document.createElement("div");
+    newCategory.classList.add("list-element");
 
     localStorage.setItem("title1", title);
     console.log(localStorage.getItem("title1"));
 
-    document.getElementById("list-title").value = "";
-    newList.innerHTML = "<h3>" + title + "</h3> " +
+    document.getElementById("category-title").value = "";
+    newCategory.innerHTML = "<h3>" + title + "</h3> " +
         "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
 
-    newList.addEventListener("click", editList);
+    newCategory.addEventListener("click", editList);
 
-    listsContainer.appendChild(newList);
-    showList(newList);
+    listOfCategories.appendChild(newCategory);
+    showCategory(newCategory);
 
 }
 
@@ -309,29 +275,27 @@ function editList(e)
     // console.log(element.parentElement);
     if (element.id === "trash-icon")
     {
-        removeList(element.parentElement);
+        removeCategory(element.parentElement);
     }
     else
     {
-        showList(element);
+        showCategory(element);
     }
 }
 
-function showList(clickedElement)
+function showCategory(clickedElement)
 {
-    // let element = e.target;
-
-    let listTitle;
+    let categoryTitle;
 
     if (clickedElement.nodeName === "H3")
     {
-        listTitle = clickedElement.innerText;
-
+        categoryTitle = clickedElement.innerText;
     }
     else
     {
-        listTitle = clickedElement.querySelector("H3").innerText;
+        categoryTitle = clickedElement.querySelector("H3").innerText;
     }
+
     let rightContainer = document.getElementById("right-container");
     rightContainer.classList.add("list-elements");
     rightContainer.classList.add("list");
@@ -340,11 +304,13 @@ function showList(clickedElement)
     {
         rightContainer.removeChild(rightContainer.lastElementChild);
     }
-    rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + listTitle + " </h1> <div> <div id='to-do-list'><h2> To do: </h2> </div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
+    rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + categoryTitle + " </h1> " +
+        "<div> <div id='to-do-list'><h2> To do: </h2> " +
+        "</div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
 
 }
 
-function removeList(element)
+function removeCategory(element)
 {
     element.parentElement.removeChild(element);
     console.log("you tried to remove list");
@@ -379,10 +345,7 @@ function logout()
 function editTitle(title)
 {
     title.style.display = "none";
-    // let inputField = document.createElement("input");
-    // inputField.setAttribute("ID", "editTitleInputField");
-    // inputField.classList.add("input");
-    ///nie mogę się zdecydować xD
+
     createInputField(title.parentElement, "text", "editTitleInputField", "", "", "input");
 
     let inputField;
@@ -407,5 +370,23 @@ function editTitle(title)
             });
 
     }, 0);
+
+}
+
+function getMainSectionHTML()
+{
+    return "<div class ='container left'>" +
+        " <div class = 'box'> " +
+        "<h1>Plan your time </h1>" +
+        " <h2>Improve your life</h2>" +
+        " <p>Welcome! So nice to see you here but this is just a placeholder. Wait for the actual content" +
+        ":P <br><br> \“You create opportunities by performing, not complaining.\”</p> " +
+        " </div> " +
+        " <div class='image-div'></div>" +
+        "</div> " +
+        " <div class='container right' id='main-section-container-right'>" +
+        "   <button id='log-in-btn'>Log in</button>" +
+        "<button id='sign-in-btn'>Sign in</button> " +
+        "  </div>  </div>  ";
 
 }
