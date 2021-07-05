@@ -229,11 +229,11 @@ function displayDashboard(e)
     // listsContainer.appendChild(addListButton);
 
 
-    setTimeout(function ()
-    {
-        let titleInputField = document.getElementById("category-title");
-        //  console.log(titleInputField);
-    }, 0);
+    // setTimeout(function ()
+    // {
+    //     let titleInputField = document.getElementById("category-title");
+    //     //  console.log(titleInputField);
+    // }, 0);
 
     addListButton.addEventListener("click", createNewCategory);
     dashboardDisplayed = true;
@@ -241,6 +241,8 @@ function displayDashboard(e)
 
 
 }
+let categoriesArray = [];
+
 
 function createNewCategory()
 {
@@ -254,13 +256,18 @@ function createNewCategory()
     {
         localStorage.setItem("user"+userId+"numberOfCategories", "0");
         numberOfCategories = 0;
+
     }
     else
     {
-        numberOfCategories = parseInt(numberOfCategories) ;
-        localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
+        numberOfCategories = parseInt(numberOfCategories);
     }
+
+
     localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
+        localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
+
+
     displayAllCategories();
     // showCategory(newCategory);
 }
@@ -274,7 +281,7 @@ function displayAllCategories(id)
     numberOfCategories = parseInt(numberOfCategories);
     let categoriesContainer = document.getElementById("categories-box");
     removeAllChildrenElements(categoriesContainer);
-    for (let i = 0; i < numberOfCategories; i++)
+    for (let i = numberOfCategories - 1; i >= 0; i--)
     {
         ///do something
         let newCategory = document.createElement("div");
@@ -282,7 +289,7 @@ function displayAllCategories(id)
         let newTitle = localStorage.getItem("user"+userId+"category"+(numberOfCategories - 1 - i));
 
         document.getElementById("category-title").value = "";
-        newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
+        newCategory.innerHTML = "<h3 id=" + (numberOfCategories - 1 - i) +">" + newTitle + "</h3> " +
             "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
 
         newCategory.addEventListener("click", editCategory);
@@ -336,8 +343,28 @@ function showCategory(clickedElement)
 
 function removeCategory(element) /////
 {
-    element.parentElement.removeChild(element);
-    // console.log("you tried to remove list");
+    console.log(element)
+    let categoryId =  parseInt(element.querySelector("H3").getAttribute("ID"));
+    localStorage.removeItem("user"+userId+"category"+categoryId);
+
+    let numberOfCategories = parseInt(localStorage.getItem("user"+userId+"numberOfCategories"));
+    if (categoryId !== numberOfCategories - 1)
+    {
+        for (let i = categoryId + 1; i < numberOfCategories; i++)
+        {
+
+            let item = localStorage.getItem("user"+userId+"category"+i);
+            localStorage.setItem("user"+userId+"category"+(i-1), item);
+            //przesunąć je w local storage
+
+        }
+        localStorage.removeItem("user" + userId + "category" + (numberOfCategories-1).toString());
+    }
+
+    localStorage.setItem("user"+userId+"numberOfCategories",(numberOfCategories - 1).toString());
+    // element.parentElement.removeChild(element);
+    displayAllCategories();   //zmienić id - zrobi się samo w displayAllCategories
+    // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
 
 }
 
