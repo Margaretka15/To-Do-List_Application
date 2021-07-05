@@ -289,7 +289,7 @@ function displayAllCategories(id)
         let newTitle = localStorage.getItem("user"+userId+"category"+(numberOfCategories - 1 - i));
 
         document.getElementById("category-title").value = "";
-        newCategory.innerHTML = "<h3 id=" + (numberOfCategories - 1 - i) +">" + newTitle + "</h3> " +
+        newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
             "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
 
         newCategory.addEventListener("click", editCategory);
@@ -303,7 +303,6 @@ function displayAllCategories(id)
 function editCategory(e)
 {
     let element = e.target;
-    // console.log(element.parentElement);
     if (element.id === "trash-icon")
     {
         removeCategory(element.parentElement);
@@ -344,26 +343,36 @@ function showCategory(clickedElement)
 function removeCategory(element) /////
 {
     console.log(element)
-    let categoryId =  parseInt(element.querySelector("H3").getAttribute("ID"));
-    localStorage.removeItem("user"+userId+"category"+categoryId);
 
-    let numberOfCategories = parseInt(localStorage.getItem("user"+userId+"numberOfCategories"));
-    if (categoryId !== numberOfCategories - 1)
+    let categoriesArray = document.getElementsByClassName("list-element");
+    let removedCategoryId;
+    for (let i = 0; i < categoriesArray.length; i++)
     {
-        for (let i = categoryId + 1; i < numberOfCategories; i++)
-        {
 
+        if(categoriesArray[i] === element)
+        {
+            localStorage.removeItem("user" + userId + "category" + i);
+            removedCategoryId = i;
+            break;
+        }
+
+    }
+    console.log(categoriesArray);
+    let numberOfCategories = parseInt(localStorage.getItem("user"+userId+"numberOfCategories"));
+    if (removedCategoryId !== numberOfCategories - 1)
+    {
+        for (let i = removedCategoryId + 1; i < numberOfCategories; i++)
+        {
             let item = localStorage.getItem("user"+userId+"category"+i);
             localStorage.setItem("user"+userId+"category"+(i-1), item);
-            //przesunąć je w local storage
 
         }
         localStorage.removeItem("user" + userId + "category" + (numberOfCategories-1).toString());
     }
-
+    //
     localStorage.setItem("user"+userId+"numberOfCategories",(numberOfCategories - 1).toString());
-    // element.parentElement.removeChild(element);
-    displayAllCategories();   //zmienić id - zrobi się samo w displayAllCategories
+
+    displayAllCategories();
     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
 
 }
