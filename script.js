@@ -195,12 +195,11 @@ function displayDashboard(e)
         "<div class = \"left-list-box\"> </div>" +
         "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
         "</div>" +
-    "<div  id = 'categories-box' class 'left-list-box'> </div>";
+        "<div  id = 'categories-box' class 'left-list-box'> </div>";
     let addListButton = document.createElement("i");
     addListButton.classList.add("fa");
     addListButton.classList.add("fa-plus-circle");
     addListButton.classList.add("fa-3x");
-
 
 
     let bigContainer = document.createElement("div");
@@ -237,10 +236,10 @@ function createNewCategory()
     if (title === "")
         return;
 
-    let numberOfCategories = localStorage.getItem("user"+userId+"numberOfCategories");
-    if(numberOfCategories === null)
+    let numberOfCategories = localStorage.getItem("user" + userId + "numberOfCategories");
+    if (numberOfCategories === null)
     {
-        localStorage.setItem("user"+userId+"numberOfCategories", "0");
+        localStorage.setItem("user" + userId + "numberOfCategories", "0");
         numberOfCategories = 0;
     }
     else
@@ -248,15 +247,16 @@ function createNewCategory()
         numberOfCategories = parseInt(numberOfCategories);
     }
     localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
-    localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
+    localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories + 1).toString());
 
     displayAllCategories();
     // showCategory(newCategory);
 }
+
 function displayAllCategories()
 {
-    let numberOfCategories = localStorage.getItem("user"+userId+"numberOfCategories");
-    if(numberOfCategories === null )
+    let numberOfCategories = localStorage.getItem("user" + userId + "numberOfCategories");
+    if (numberOfCategories === null)
     {
         return;
     }
@@ -267,7 +267,7 @@ function displayAllCategories()
     {
         let newCategory = document.createElement("div");
         newCategory.classList.add("list-element");
-        let newTitle = localStorage.getItem("user"+userId+"category"+(numberOfCategories - 1 - i));
+        let newTitle = localStorage.getItem("user" + userId + "category" + (numberOfCategories - 1 - i));
 
         document.getElementById("category-title").value = "";
         newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
@@ -296,33 +296,33 @@ function getClickedCategoryId(clickedElement)
     // console.log("clicked element ", clickedElement);
     for (let i = 0; i < categoriesArray.length; i++)
     {
-        if(categoriesArray[i] === clickedElement)
+        if (categoriesArray[i] === clickedElement)
         {
             categoryId = i;
             // console.log(categoryId);
-          return categoryId;
+            return categoryId;
         }
     }
 
 }
+
 function showCategory(clickedElement)
 {
-    if(clickedElement.target.nodeName === "I")
+    if (clickedElement.target.nodeName === "I")
         return;
     let categoryTitle;
     let shownCategoryId = getClickedCategoryId(clickedElement.target);
 
-    categoryTitle = localStorage.getItem("user"+userId+"category"+shownCategoryId);
+    categoryTitle = localStorage.getItem("user" + userId + "category" + shownCategoryId);
 
     let rightContainer = document.getElementById("right-container");
-    if(rightContainer === null)
+    if (rightContainer === null)
     {
         let bigContainer = document.getElementById("big-container-dashboard");
         rightContainer = document.createElement("div");
         rightContainer.setAttribute("ID", "right-container");
         bigContainer.appendChild(rightContainer);
     }
-
 
 
     rightContainer.classList.add("list-elements");
@@ -346,21 +346,21 @@ function removeCategory(element) /////
     let removedCategoryId = getClickedCategoryId(element.target);
 
 
-    let numberOfCategories = parseInt(localStorage.getItem("user"+userId+"numberOfCategories"));
+    let numberOfCategories = parseInt(localStorage.getItem("user" + userId + "numberOfCategories"));
     if (removedCategoryId !== numberOfCategories - 1)
     {
         for (let i = removedCategoryId + 1; i < numberOfCategories; i++)
         {
-            let item = localStorage.getItem("user"+userId+"category"+i);
-            localStorage.setItem("user"+userId+"category"+(i-1), item);
+            let item = localStorage.getItem("user" + userId + "category" + i);
+            localStorage.setItem("user" + userId + "category" + (i - 1), item);
 
         }
 
     }
-    localStorage.removeItem("user" + userId + "category" + (numberOfCategories-1).toString());
-    localStorage.setItem("user"+userId+"numberOfCategories",(numberOfCategories - 1).toString());
+    localStorage.removeItem("user" + userId + "category" + (numberOfCategories - 1).toString());
+    localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories - 1).toString());
 
-    if(currentlyDisplayedCategory === removedCategoryId)
+    if (currentlyDisplayedCategory === removedCategoryId)
     {
         let rightContainer = document.getElementById("right-container");
         document.getElementById("big-container-dashboard").removeChild(rightContainer);
@@ -395,7 +395,7 @@ function newUser()
     {
 
     }
-        // console.log("juz jest taki uzytkownik");
+    // console.log("juz jest taki uzytkownik");
 
 }
 
@@ -424,28 +424,27 @@ function editTitle(title)
 
     createInputField(title.parentElement, "text", "editTitleInputField", "", "", "input");
 
-    let inputField;
-    setTimeout(function ()
-    {
-        inputField = document.getElementById("editTitleInputField");
-        inputField.classList.add("edit-input");
-        inputField.value = title.innerText;
-        inputField.focus();
-        // console.log(inputField);
-        title.parentElement.insertBefore(inputField, title);
-        inputField.addEventListener("keypress",
-            (e) =>
+    let inputField = document.getElementById("editTitleInputField");
+    inputField.classList.add("edit-input");
+    inputField.value = title.innerText;
+    inputField.focus();
+    // console.log(inputField);
+    title.parentElement.insertBefore(inputField, title);
+    inputField.addEventListener("keypress",
+        (e) =>
+        {
+            if (e.key === 'Enter')
             {
-                if (e.key === 'Enter')
-                {
-                    title.style.display = "block";
-                    title.innerText = inputField.value;
-                    title.parentElement.removeChild(inputField);
-                }
+                title.style.display = "block";
+                title.innerText = inputField.value;
+                title.parentElement.removeChild(inputField);
+                localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory, inputField.value);
+                displayAllCategories();
+            }
 
-            });
+        });
 
-    }, 0);
+
 
 }
 
