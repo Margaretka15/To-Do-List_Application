@@ -12,7 +12,8 @@ let messageDisplayed = false;
 
 let dashboardDisplayed = false;
 let categoriesOuterContainer;
-let list;
+// let list;
+let currentlyDisplayedCategory;
 
 displayMainSection();
 // document.addEventListener("click", (e) =>
@@ -33,7 +34,7 @@ function displayMainSection()
     document.body.appendChild(mainSection);
 
     let loginButton = document.getElementById("log-in-btn");
-    let signInButton = document.getElementById("sign-in-btn");
+    let signInButton = document.getElementById("sign-up-btn");
 
 
     loginButton.addEventListener("click", showMessage);
@@ -63,7 +64,7 @@ function showMessage(e)
     mainSection.appendChild(messageOuterContainer);
 
     let form = document.createElement("form");
-    form.id = "sign-in-form";
+    form.id = "sign-up-form";
     let messageTitle = document.createElement("h2");
     let message = document.getElementById("message-box");
 
@@ -76,9 +77,9 @@ function showMessage(e)
     {
         displayLoginForm();
     }
-    else if (element.id === "sign-in-btn")
+    else if (element.id === "sign-up-btn")
     {
-        displaySignInForm();
+        displaySignUpForm();
     }
 
     function displayLoginForm()
@@ -98,19 +99,19 @@ function showMessage(e)
 
     }
 
-    function displaySignInForm()
+    function displaySignUpForm()
     {
-        messageTitle.innerText = "Sign in";
+        messageTitle.innerText = "Sign up";
 
         removeAllChildrenElements(form);
 
-        createInputField(form, "text", "name", "Your name", "Enter your name", "sign-in-element");
-        createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-in-element");
-        createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-in-element");
-        createInputField(form, "password", "password", "Password", "Enter your password", "sign-in-element");
-        createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-in-element");
+        createInputField(form, "text", "name", "Your name", "Enter your name", "sign-up-element");
+        createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-up-element");
+        createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-up-element");
+        createInputField(form, "password", "password", "Password", "Enter your password", "sign-up-element");
+        createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-up-element");
 
-        let submitButton = newButton(form, "light", "Sign in");
+        let submitButton = newButton(form, "light", "Sign up");
 
         submitButton.addEventListener("click", newUser);
     }
@@ -186,8 +187,6 @@ function displayDashboard(e)
 
     logoutButton.addEventListener("click", logout);
 
-    /////list of categories on the left
-    ////to do - div inside, only for categories
 
     categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
@@ -195,8 +194,6 @@ function displayDashboard(e)
     categoriesOuterContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
         "<div class = \"left-list-box\"> </div>" +
         "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
-
-
         "</div>" +
     "<div  id = 'categories-box' class 'left-list-box'> </div>";
     let addListButton = document.createElement("i");
@@ -204,14 +201,13 @@ function displayDashboard(e)
     addListButton.classList.add("fa-plus-circle");
     addListButton.classList.add("fa-3x");
 
-    //// lists content on the right
+
+
     let bigContainer = document.createElement("div");
     bigContainer.setAttribute("id", "big-container-dashboard");
-    let rightContainer = document.createElement("div");
-    rightContainer.setAttribute("ID", "right-container");
 
     bigContainer.appendChild(categoriesOuterContainer);
-    bigContainer.appendChild(rightContainer);
+
     dashboardSection.appendChild(bigContainer);
 
 
@@ -226,23 +222,13 @@ function displayDashboard(e)
             }
 
         });
-    // listsContainer.appendChild(addListButton);
-
-
-    // setTimeout(function ()
-    // {
-    //     let titleInputField = document.getElementById("category-title");
-    //     //  console.log(titleInputField);
-    // }, 0);
 
     addListButton.addEventListener("click", createNewCategory);
     dashboardDisplayed = true;
-    //////?????
+////????????????
 
 
 }
-let categoriesArray = [];
-
 
 function createNewCategory()
 {
@@ -256,25 +242,21 @@ function createNewCategory()
     {
         localStorage.setItem("user"+userId+"numberOfCategories", "0");
         numberOfCategories = 0;
-
     }
     else
     {
         numberOfCategories = parseInt(numberOfCategories);
     }
-
-
     localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
-        localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
-
+    localStorage.setItem("user"+userId+"numberOfCategories", (numberOfCategories + 1).toString());
 
     displayAllCategories();
     // showCategory(newCategory);
 }
-function displayAllCategories(id)
+function displayAllCategories()
 {
     let numberOfCategories = localStorage.getItem("user"+userId+"numberOfCategories");
-    if(numberOfCategories === null || numberOfCategories === "0")
+    if(numberOfCategories === null )
     {
         return;
     }
@@ -283,50 +265,66 @@ function displayAllCategories(id)
     removeAllChildrenElements(categoriesContainer);
     for (let i = numberOfCategories - 1; i >= 0; i--)
     {
-        ///do something
         let newCategory = document.createElement("div");
         newCategory.classList.add("list-element");
         let newTitle = localStorage.getItem("user"+userId+"category"+(numberOfCategories - 1 - i));
 
         document.getElementById("category-title").value = "";
         newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
-            "<i id ='trash-icon' class=\"fa fa-trash-o fa-2x\" ></i>";
+            "<i class=\"fa fa-trash-o fa-2x trash-icon\" ></i>";
 
-        newCategory.addEventListener("click", editCategory);
+        newCategory.addEventListener("click", showCategory);
 
         categoriesContainer.appendChild(newCategory);
+
+        newCategory.querySelector("I").addEventListener("click", removeCategory);
     }
 
 
 }
 
-function editCategory(e)
+function getClickedCategoryId(clickedElement)
 {
-    let element = e.target;
-    if (element.id === "trash-icon")
-    {
-        removeCategory(element.parentElement);
-    }
-    else
-    {
-        showCategory(element);
-    }
-}
 
+    let categoriesArray = document.getElementsByClassName("list-element");
+    let categoryId;
+
+    if (clickedElement.nodeName === "H3" || clickedElement.nodeName === "I")
+    {
+        clickedElement = clickedElement.parentElement;
+    }
+    // console.log("clicked element ", clickedElement);
+    for (let i = 0; i < categoriesArray.length; i++)
+    {
+        if(categoriesArray[i] === clickedElement)
+        {
+            categoryId = i;
+            // console.log(categoryId);
+          return categoryId;
+        }
+    }
+
+}
 function showCategory(clickedElement)
 {
+    if(clickedElement.target.nodeName === "I")
+        return;
     let categoryTitle;
+    let shownCategoryId = getClickedCategoryId(clickedElement.target);
 
-    if (clickedElement.nodeName === "H3")
-    {
-        categoryTitle = clickedElement.innerText;
-    }
-    else
-    {
-        categoryTitle = clickedElement.querySelector("H3").innerText;
-    }
+    categoryTitle = localStorage.getItem("user"+userId+"category"+shownCategoryId);
 
     let rightContainer = document.getElementById("right-container");
+    if(rightContainer === null)
+    {
+        let bigContainer = document.getElementById("big-container-dashboard");
+        rightContainer = document.createElement("div");
+        rightContainer.setAttribute("ID", "right-container");
+        bigContainer.appendChild(rightContainer);
+    }
+
+
+
     rightContainer.classList.add("list-elements");
     rightContainer.classList.add("list");
 
@@ -337,27 +335,17 @@ function showCategory(clickedElement)
     rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + categoryTitle + " </h1> " +
         "<div> <div id='to-do-list'><h2> To do: </h2> " +
         "</div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
+    currentlyDisplayedCategory = shownCategoryId;
+    console.log(currentlyDisplayedCategory);
 
 }
 
 function removeCategory(element) /////
 {
-    console.log(element)
+    // console.log(element.target.parentElement);
+    let removedCategoryId = getClickedCategoryId(element.target);
 
-    let categoriesArray = document.getElementsByClassName("list-element");
-    let removedCategoryId;
-    for (let i = 0; i < categoriesArray.length; i++)
-    {
 
-        if(categoriesArray[i] === element)
-        {
-            localStorage.removeItem("user" + userId + "category" + i);
-            removedCategoryId = i;
-            break;
-        }
-
-    }
-    console.log(categoriesArray);
     let numberOfCategories = parseInt(localStorage.getItem("user"+userId+"numberOfCategories"));
     if (removedCategoryId !== numberOfCategories - 1)
     {
@@ -367,11 +355,16 @@ function removeCategory(element) /////
             localStorage.setItem("user"+userId+"category"+(i-1), item);
 
         }
-        localStorage.removeItem("user" + userId + "category" + (numberOfCategories-1).toString());
+
     }
-    //
+    localStorage.removeItem("user" + userId + "category" + (numberOfCategories-1).toString());
     localStorage.setItem("user"+userId+"numberOfCategories",(numberOfCategories - 1).toString());
 
+    if(currentlyDisplayedCategory === removedCategoryId)
+    {
+        let rightContainer = document.getElementById("right-container");
+        document.getElementById("big-container-dashboard").removeChild(rightContainer);
+    }
     displayAllCategories();
     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
 
@@ -379,7 +372,7 @@ function removeCategory(element) /////
 
 function newUser()
 {
-    // let form = document.getElementById("sign-in-form");
+    // let form = document.getElementById("sign-up-form");
     let userName = document.getElementById("name").value;
     let userSurname = document.getElementById("surname").value;
     let userPassword = document.getElementById("password").value;
@@ -399,7 +392,10 @@ function newUser()
         displayDashboard();
     }
     else
-        console.log("juz jest taki uzytkownik");
+    {
+
+    }
+        // console.log("juz jest taki uzytkownik");
 
 }
 
@@ -466,7 +462,7 @@ function getMainSectionHTML()
         "</div> " +
         " <div class='container right' id='main-section-container-right'>" +
         "   <button id='log-in-btn'>Log in</button>" +
-        "<button id='sign-in-btn'>Sign in</button> " +
+        "<button id='sign-up-btn'>Sign up</button> " +
         "  </div>  </div>  ";
 
 }
