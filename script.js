@@ -190,12 +190,12 @@ function displayDashboard(e)
 
     categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
-    categoriesOuterContainer.classList.add("list");
+    categoriesOuterContainer.classList.add("column");
     categoriesOuterContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
         "<div class = \"left-list-box\"> </div>" +
         "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
         "</div>" +
-        "<div  id = 'categories-box' class 'left-list-box'> </div>";
+        "<div  id = 'categories-box' class = 'left-list-box'> </div>";
     let addListButton = document.createElement("i");
     addListButton.classList.add("fa");
     addListButton.classList.add("fa-plus-circle");
@@ -266,7 +266,7 @@ function displayAllCategories()
     for (let i = numberOfCategories - 1; i >= 0; i--)
     {
         let newCategory = document.createElement("div");
-        newCategory.classList.add("list-element");
+        newCategory.classList.add("category-element");
         let newTitle = localStorage.getItem("user" + userId + "category" + (numberOfCategories - 1 - i));
 
         document.getElementById("category-title").value = "";
@@ -286,7 +286,7 @@ function displayAllCategories()
 function getClickedCategoryId(clickedElement)
 {
 
-    let categoriesArray = document.getElementsByClassName("list-element");
+    let categoriesArray = document.getElementsByClassName("category-element");
     let categoryId;
 
     if (clickedElement.nodeName === "H3" || clickedElement.nodeName === "I")
@@ -325,21 +325,84 @@ function showCategory(clickedElement)
     }
 
 
-    rightContainer.classList.add("list-elements");
-    rightContainer.classList.add("list");
+    rightContainer.classList.add("list-big-outer-container");
+    rightContainer.classList.add("column");
 
     if (rightContainer.hasChildNodes())
     {
         rightContainer.removeChild(rightContainer.lastElementChild);
     }
     rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + categoryTitle + " </h1> " +
-        "<div> <div id='to-do-list'><h2> To do: </h2> " +
-        "</div> <div id ='done-list'> <h2> Done: </h2>  </div>  </div>";
+        "<div> <div id='to-do-list' class='list-small-outer-container'><h2> To do: </h2> " +
+
+        "<input type = 'text' placeholder='Plan something here!'  class='thin-dark-border'>"
+        +
+       " <div class = 'list'>" +
+
+      "  </div>" +
+        "</div> <div id ='done-list' class='list-small-outer-container'> <h2> Done: </h2>  " +
+        " <div class = 'list'>" +
+
+        "  </div>" +
+        "</div>  </div>";
     currentlyDisplayedCategory = shownCategoryId;
-    console.log(currentlyDisplayedCategory);
+    // console.log(currentlyDisplayedCategory);
 
+    let toDoInputField = rightContainer.querySelector("INPUT");
+    toDoInputField.addEventListener("keypress", (e) => {
+        if(e.key === "Enter" && toDoInputField.value!=="")
+        {
+            addOneToDo(toDoInputField.value);
+            toDoInputField.value ="";
+        }
+    })
+    displayToDoList();
+    displayDoneList();
 }
+function addOneToDo(todo)
+{
+    console.log(todo);
+    let numberOfToDo = localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
+    if(numberOfToDo === null)
+    {
+        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", "0");
+        numberOfToDo = 0;
+    }
+    else
+    {
+        numberOfToDo = parseInt(localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo"));
+    }
+    localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory+"to-do"+numberOfToDo, todo);
+    localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo", (numberOfToDo + 1).toString());
+    displayToDoList();
+}
+function displayToDoList()
+{
+    let listOfToDo = document.getElementById("to-do-list").querySelector(".list");
+    removeAllChildrenElements(listOfToDo);
+    console.log(typeof listOfToDo);
+    let numberOfToDo = localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
+     if(numberOfToDo!== null && numberOfToDo !== "0")
+     {
+         for (let i = numberOfToDo-1; i >=0; i--)
+         {
+             let newToDo = document.createElement("div");
+             newToDo.classList.add("list-element");
+             newToDo.classList.add("thin-dark-border");
+             let title = localStorage.getItem("user" + userId + "category" +currentlyDisplayedCategory +"to-do"+(numberOfToDo - 1 - i));
 
+             // document.getElementById("category-title").value = "";
+             newToDo.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
+                 "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
+
+            listOfToDo.appendChild(newToDo);
+         }
+     }
+}
+function displayDoneList()
+{
+    let listOfDone = document.getElementById("done-list");
+}
 function removeCategory(element) /////
 {
     // console.log(element.target.parentElement);
@@ -364,6 +427,11 @@ function removeCategory(element) /////
     {
         let rightContainer = document.getElementById("right-container");
         document.getElementById("big-container-dashboard").removeChild(rightContainer);
+        // currentlyDisplayedCategory = null;
+    }
+    else if (currentlyDisplayedCategory!== undefined && removedCategoryId < currentlyDisplayedCategory)
+    {
+        currentlyDisplayedCategory -=1; /// chyba wystarczy?? do przetestowania
     }
     displayAllCategories();
     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!

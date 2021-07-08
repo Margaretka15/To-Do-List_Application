@@ -203,7 +203,26 @@ i:hover{
     color: #9fb199;
     cursor: pointer;
 }
-.list{
+.x-icon{
+    position: absolute;
+    right: 5px;
+    line-height: 35px;
+    font-size: 30px;
+/*    na pewno trzeba zrobić to jaśniejsze*/
+
+}
+.mark-as-done-checkbox{
+
+    height: 30px;
+    width: 30px;
+
+}
+
+
+/*.mark-as-done-checkbox:checked{*/
+/*    background-color: gray;*/
+/*}*/
+.column{
     box-sizing: border-box;
     height: 80vh;
     /*background-color: gray;*/
@@ -213,24 +232,57 @@ i:hover{
     padding: 0.5rem 2rem;
     overflow-y: auto;
 }
-.list h2{
-    user-select: none;
+.column h2{
+    /*user-select: none;*/
     border-bottom: black solid 2px;
     color: #464F41;
     text-align: center;
 
 }
-.list-elements div{
+
+.list-big-outer-container > div{
     width: 100%;
-    /*display: flex;*/
+    display: flex;
+    flex-direction: row;
+    /*align-content: stretch;*/
     /*justify-content:  center;*/
+    justify-content: space-between;
 
 }
-.list-elements div h2{
-    width: 95%;
+.list-small-outer-container{
+    width: 48%;
+    height: auto;
+}
+#to-do-list h2{
+    margin-bottom: 2px;
+    border: none;
+}
+#to-do-list .list{
+    margin-top: 5px;
+}
+.thin-dark-border{
+    border: gray 1px solid;
+}
+.list{
+    position: relative;
+ }
+h4{
+    margin: 0;
+    width: 100%;
+    padding-left: 5px;
+    line-height: 35px;
 
-    margin-left: auto;
-    margin-right: auto;
+
+}
+.list-element{
+    height: 35px;
+    margin-top: 3px;
+    /*position: relative;*/
+    display: flex;
+align-content: center;
+    /*justify-content: stretch;*/
+    position: relative;
+    overflow: hidden;
 
 }
 .categories-container{
@@ -241,26 +293,28 @@ i:hover{
     position: relative;
 
 }
-.list-elements{
-    width: 65%;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    /*justify-content: space-between;*/
-    color: black;
 
-}
-h1, h2, h3{
+h1, h2, h3, h4{
     user-select: none;
 }
 #right-container{
     padding-top: 1rem;
+    width: 65%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    /*height: 100%;*/
+    color: black;
+
+
+
 }
-#right-container div{
+#right-container > div{
     display: flex;
     flex-direction: row;
+    /*justify-content: space-evenly;*/
 }
-.list-elements h1{
+.list-big-outer-container h1{
     font-size: 2rem;
     margin-bottom:  0;
     border-bottom: solid 2px #464F41;
@@ -268,7 +322,7 @@ h1, h2, h3{
     text-align: center;
 }
 
-.list-element{
+.category-element{
     background-color: white;
     border: #464F41 solid 2px;
     height: 50px;
@@ -281,7 +335,7 @@ h1, h2, h3{
     overflow: hidden;
     cursor: pointer;
 }
-.list-element i{
+.category-element i{
     line-height: 50px;
     /*font-size: larger;*/
 }
@@ -343,11 +397,21 @@ h3{
         width: 100%;
 
     }
-    .list-elements{
+    .list-big-outer-container{
         width: 100%;
     }
     #big-container-dashboard{
         flex-direction: column;
+    }
+    #right-container > div{
+
+        flex-direction: column;
+
+        /*justify-content:  center;*/
+
+    }
+    .list-small-outer-container{
+        width: 100%;
     }
 }
 
