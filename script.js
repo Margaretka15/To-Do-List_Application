@@ -305,6 +305,27 @@ function getClickedCategoryId(clickedElement)
     }
 
 }
+/////te dwie funkcje da się połączyć, ale pasuje podać parenta i nazwę klasy po której szukamy
+function getClickedItemId(clickedElement)
+{
+    let elementsArray = document.getElementById("to-do-list").getElementsByClassName("list-element");
+    let itemId;
+    if (clickedElement.nodeName === "H3" || clickedElement.nodeName === "I")
+    {
+        clickedElement = clickedElement.parentElement;
+    }
+    // console.log("clicked element ", clickedElement.target);
+    for (let i = 0; i < elementsArray.length; i++)
+    {
+        if (elementsArray[i] === clickedElement)
+        {
+            itemId = i;
+            console.log(itemId);
+            return itemId;
+        }
+    }
+    // console.log(itemId);
+}
 
 function showCategory(clickedElement)
 {
@@ -394,8 +415,8 @@ function displayToDoList()
              // document.getElementById("category-title").value = "";
              newToDo.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
                  "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
-
-            listOfToDo.appendChild(newToDo);
+             newToDo.querySelector(".x-icon").addEventListener("click", removeListToDoElement);
+             listOfToDo.appendChild(newToDo);
          }
      }
 }
@@ -403,11 +424,29 @@ function displayDoneList()
 {
     let listOfDone = document.getElementById("done-list");
 }
+function removeListToDoElement(element)
+{
+    let removedElementId = getClickedItemId(element.target);
+
+    let numberOfToDo = parseInt(localStorage.getItem("user"+userId +"category"+currentlyDisplayedCategory+"numberOfToDo"));
+    if(removedElementId !== numberOfToDo - 1)
+    {
+        for (let i = removedElementId + 1; i < numberOfToDo; i++)
+        {
+            let item = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory+"to-do"+i);
+            localStorage.setItem("user" + userId + "category" +currentlyDisplayedCategory+"to-do"+(i - 1), item);
+        }
+    }
+    localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + (numberOfToDo - 1).toString());
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", (numberOfToDo - 1).toString());
+
+    displayToDoList();
+    // console.log("you tried to remove this item");
+
+}
 function removeCategory(element) /////
 {
-    // console.log(element.target.parentElement);
     let removedCategoryId = getClickedCategoryId(element.target);
-
 
     let numberOfCategories = parseInt(localStorage.getItem("user" + userId + "numberOfCategories"));
     if (removedCategoryId !== numberOfCategories - 1)
@@ -416,9 +455,7 @@ function removeCategory(element) /////
         {
             let item = localStorage.getItem("user" + userId + "category" + i);
             localStorage.setItem("user" + userId + "category" + (i - 1), item);
-
         }
-
     }
     localStorage.removeItem("user" + userId + "category" + (numberOfCategories - 1).toString());
     localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories - 1).toString());
@@ -433,6 +470,14 @@ function removeCategory(element) /////
     {
         currentlyDisplayedCategory -=1; /// chyba wystarczy?? do przetestowania
     }
+
+    let numberOfToDo = parseInt(localStorage.getItem("user"+userId +"category"+currentlyDisplayedCategory+"numberOfToDo"));
+    for (let i = 0; i < numberOfToDo; i++)
+    {
+        localStorage.removeItem("user"+userId+"category"+currentlyDisplayedCategory+"to-do"+i);
+        localStorage.removeItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
+    }
+
     displayAllCategories();
     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
 
