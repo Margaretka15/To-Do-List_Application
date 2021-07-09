@@ -1,18 +1,16 @@
 let mainSection;
 let dashboardSection;
 
-// let numberOfUsers;
-
-
 localStorage.clear();
+
 if (localStorage.getItem("numberOfUsers") === null)
     localStorage.setItem("numberOfUsers", "0");
-let userId = 0; //// potrzebne!! widoczne w wielu miejscach
+
+let userId = 0; //// potrzebne!! widoczne w wielu miejscach, będzie ustawiane w momencie logowania i wywalane przy wylogowaniu xD
 let messageDisplayed = false;
 
 let dashboardDisplayed = false;
 let categoriesOuterContainer;
-// let list;
 let currentlyDisplayedCategory;
 
 displayMainSection();
@@ -27,7 +25,9 @@ function displayMainSection()
     mainSection.setAttribute("id", "main-section");
 
 
-    messageDisplayed = false; ////// trzeba to zrobić tak, żeby w widoku mobilnym nie dało się w to kliknąć drugi raz !!!
+    messageDisplayed = false; ////// trzeba to zrobić tak, żeby w widoku mobilnym
+    // nie dało się w to kliknąć drugi raz !!
+    // !! do zrobienia!!!
     dashboardDisplayed = false;
 
     mainSection.innerHTML = getMainSectionHTML();
@@ -93,7 +93,7 @@ function showMessage(e)
             createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
 
             let submitButton = newButton(form, "light", "Log in");
-            submitButton.addEventListener("click", displayDashboard);
+            submitButton.addEventListener("click", login);
 
         }
 
@@ -116,15 +116,15 @@ function showMessage(e)
         submitButton.addEventListener("click", newUser);
     }
 
-
 }
 
 function closeMessage(e)
 {
-    if (e.target.id === "big-message-container" || e.target.nodeName === "BUTTON")
+    if (e.target.id === "big-message-container")
     {
+
+        mainSection.removeChild(document.getElementById("outer-gray-box"));
         mainSection.removeChild(document.getElementById("big-message-container"));
-        mainSection.removeChild(document.getElementById('outer-gray-box'));
     }
 }
 
@@ -219,7 +219,6 @@ function displayDashboard(e)
             {
                 createNewCategory();
             }
-
         });
 
     addListButton.addEventListener("click", createNewCategory);
@@ -250,7 +249,8 @@ function createNewCategory()
     localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories + 1).toString());
 
     displayAllCategories();
-    // showCategory(newCategory);
+    showCategory(numberOfCategories);
+    document.getElementById("to-do-list").querySelector("INPUT").focus(); /// chyba ma sens?
 }
 
 function displayAllCategories()
@@ -273,68 +273,27 @@ function displayAllCategories()
         newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
             "<i class=\"fa fa-trash-o fa-2x trash-icon\" ></i>";
 
-        newCategory.addEventListener("click", showCategory);
+        newCategory.addEventListener("click", (e) =>
+        {
+            if (e.target.nodeName !== "I") ///// kto jest mądrą Gosią, no kto? <3
+                showCategory(numberOfCategories - 1 - i);
+        });
 
         categoriesContainer.appendChild(newCategory);
 
-        newCategory.querySelector("I").addEventListener("click", removeCategory);
-    }
-
-
-}
-
-function getClickedCategoryId(clickedElement)
-{
-
-    let categoriesArray = document.getElementsByClassName("category-element");
-    let categoryId;
-
-    if (clickedElement.nodeName === "H3" || clickedElement.nodeName === "I")
-    {
-        clickedElement = clickedElement.parentElement;
-    }
-    // console.log("clicked element ", clickedElement);
-    for (let i = 0; i < categoriesArray.length; i++)
-    {
-        if (categoriesArray[i] === clickedElement)
+        newCategory.querySelector("I").addEventListener("click", () =>
         {
-            categoryId = i;
-            // console.log(categoryId);
-            return categoryId;
-        }
+            removeCategory(numberOfCategories - 1 - i)
+        });
     }
+
 
 }
-/////te dwie funkcje da się połączyć, ale pasuje podać parenta i nazwę klasy po której szukamy
-function getClickedItemId(clickedElement)
-{
-    let elementsArray = document.getElementById("to-do-list").getElementsByClassName("list-element");
-    let itemId;
-    if (clickedElement.nodeName === "H3" || clickedElement.nodeName === "I")
-    {
-        clickedElement = clickedElement.parentElement;
-    }
-    // console.log("clicked element ", clickedElement.target);
-    for (let i = 0; i < elementsArray.length; i++)
-    {
-        if (elementsArray[i] === clickedElement)
-        {
-            itemId = i;
-            console.log(itemId);
-            return itemId;
-        }
-    }
-    // console.log(itemId);
-}
 
-function showCategory(clickedElement)
-{
-    if (clickedElement.target.nodeName === "I")
-        return;
-    let categoryTitle;
-    let shownCategoryId = getClickedCategoryId(clickedElement.target);
 
-    categoryTitle = localStorage.getItem("user" + userId + "category" + shownCategoryId);
+function showCategory(shownCategoryId)
+{
+    let categoryTitle = localStorage.getItem("user" + userId + "category" + shownCategoryId);
 
     let rightContainer = document.getElementById("right-container");
     if (rightContainer === null)
@@ -344,7 +303,6 @@ function showCategory(clickedElement)
         rightContainer.setAttribute("ID", "right-container");
         bigContainer.appendChild(rightContainer);
     }
-
 
     rightContainer.classList.add("list-big-outer-container");
     rightContainer.classList.add("column");
@@ -358,96 +316,133 @@ function showCategory(clickedElement)
 
         "<input type = 'text' placeholder='Plan something here!'  class='thin-dark-border'>"
         +
-       " <div class = 'list'>" +
+        " <div class = 'list'>" +
 
-      "  </div>" +
+        "  </div>" +
         "</div> <div id ='done-list' class='list-small-outer-container'> <h2> Done: </h2>  " +
         " <div class = 'list'>" +
 
         "  </div>" +
         "</div>  </div>";
     currentlyDisplayedCategory = shownCategoryId;
-    // console.log(currentlyDisplayedCategory);
 
     let toDoInputField = rightContainer.querySelector("INPUT");
-    toDoInputField.addEventListener("keypress", (e) => {
-        if(e.key === "Enter" && toDoInputField.value!=="")
+    toDoInputField.addEventListener("keypress", (e) =>
+    {
+        if (e.key === "Enter" && toDoInputField.value !== "")
         {
             addOneToDo(toDoInputField.value);
-            toDoInputField.value ="";
+            toDoInputField.value = "";
         }
     })
-    displayToDoList();
-    displayDoneList();
+    displayList("to-do-list", "to-do", "numberOfToDo");
+    displayList("done-list", "done", "numberOfDone");
+
 }
+
 function addOneToDo(todo)
 {
-    console.log(todo);
-    let numberOfToDo = localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
-    if(numberOfToDo === null)
+    let numberOfToDo = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo");
+    if (numberOfToDo === null)
     {
         localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", "0");
         numberOfToDo = 0;
     }
     else
     {
-        numberOfToDo = parseInt(localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo"));
+        numberOfToDo = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo"));
     }
-    localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory+"to-do"+numberOfToDo, todo);
-    localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo", (numberOfToDo + 1).toString());
-    displayToDoList();
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + numberOfToDo, todo);
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", (numberOfToDo + 1).toString());
+    // displayToDoList();
+    displayList("to-do-list", "to-do", "numberOfToDo");
 }
-function displayToDoList()
-{
-    let listOfToDo = document.getElementById("to-do-list").querySelector(".list");
-    removeAllChildrenElements(listOfToDo);
-    console.log(typeof listOfToDo);
-    let numberOfToDo = localStorage.getItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
-     if(numberOfToDo!== null && numberOfToDo !== "0")
-     {
-         for (let i = numberOfToDo-1; i >=0; i--)
-         {
-             let newToDo = document.createElement("div");
-             newToDo.classList.add("list-element");
-             newToDo.classList.add("thin-dark-border");
-             let title = localStorage.getItem("user" + userId + "category" +currentlyDisplayedCategory +"to-do"+(numberOfToDo - 1 - i));
 
-             // document.getElementById("category-title").value = "";
-             newToDo.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
-                 "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
-             newToDo.querySelector(".x-icon").addEventListener("click", removeListToDoElement);
-             listOfToDo.appendChild(newToDo);
-         }
-     }
-}
-function displayDoneList()
+function displayList(listName, keyInLocalStorage, numberKey)
 {
-    let listOfDone = document.getElementById("done-list");
-}
-function removeListToDoElement(element)
-{
-    let removedElementId = getClickedItemId(element.target);
-
-    let numberOfToDo = parseInt(localStorage.getItem("user"+userId +"category"+currentlyDisplayedCategory+"numberOfToDo"));
-    if(removedElementId !== numberOfToDo - 1)
+    let list = document.getElementById(listName).querySelector(".list");
+    removeAllChildrenElements(list);
+    let numberOfElements = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey);
+    if (numberOfElements !== null && numberOfElements !== "0")
     {
-        for (let i = removedElementId + 1; i < numberOfToDo; i++)
+        for (let i = numberOfElements - 1; i >= 0; i--)
         {
-            let item = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory+"to-do"+i);
-            localStorage.setItem("user" + userId + "category" +currentlyDisplayedCategory+"to-do"+(i - 1), item);
+            let newElement = document.createElement("div");
+            newElement.classList.add("list-element");
+            newElement.classList.add("thin-dark-border");
+            newElement.classList.add(listName + "-element");
+            let id = numberOfElements - 1 - i;
+            let title = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + id);
+
+            // document.getElementById("category-title").value = "";
+            newElement.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
+                "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
+            newElement.querySelector(".x-icon").addEventListener("click", () =>
+            {
+                removeElement(listName, keyInLocalStorage, numberKey, id);
+            });
+            newElement.querySelector("INPUT").addEventListener("click", () =>
+            {
+                // moveToListOfDone(id)
+
+                if (listName === "to-do-list")
+                {
+                    setTimeout(() => toggleBetweenLists(listName, keyInLocalStorage, numberKey, "done", "numberOfDone", id), 100);
+                }
+                else
+                {
+                    toggleBetweenLists(listName, keyInLocalStorage, numberKey, "to-do", "numberOfToDo", id); //// DO ZROBIENIA!!!!!!
+                }
+
+            });
+            if (listName === "done-list")
+            {
+                newElement.querySelector("INPUT").checked = true;
+            }
+            list.appendChild(newElement);
         }
     }
-    localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + (numberOfToDo - 1).toString());
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", (numberOfToDo - 1).toString());
-
-    displayToDoList();
-    // console.log("you tried to remove this item");
-
 }
-function removeCategory(element) /////
-{
-    let removedCategoryId = getClickedCategoryId(element.target);
 
+function removeElement(listName, keyInLocalStorage, numberKey, removedElementId)
+{
+    let numberOfElements = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey));
+    if (removedElementId !== numberOfElements - 1)
+    {
+        for (let i = removedElementId + 1; i < numberOfElements; i++)
+        {
+            let item = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + i);
+            localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + (i - 1), item);
+        }
+    }
+    localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + (numberOfElements - 1).toString());
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey, (numberOfElements - 1).toString());
+
+    displayList("to-do-list", "to-do", "numberOfToDo");
+    displayList("done-list", "done", "numberOfDone");
+}
+
+function toggleBetweenLists(sourceListName, sourceListKeyInLocalStorage, sourceListNameNumberKey, targetListName, targetListNumberKey, elementId)
+{
+    //// to zdecydowanie nie jest ładna funkcja :((((
+    let numberOfElementsInTargetList = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey);
+    if (numberOfElementsInTargetList === null)
+    {
+        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey, "0");
+        numberOfElementsInTargetList = 0;
+    }
+    else
+    {
+        numberOfElementsInTargetList = parseInt(numberOfElementsInTargetList);
+    }
+    let movedElement = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + sourceListKeyInLocalStorage + elementId);
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListName + numberOfElementsInTargetList, movedElement);
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey, (numberOfElementsInTargetList + 1).toString());
+    removeElement(sourceListName, sourceListKeyInLocalStorage, sourceListNameNumberKey, elementId);
+}
+
+function removeCategory(removedCategoryId) /////
+{
     let numberOfCategories = parseInt(localStorage.getItem("user" + userId + "numberOfCategories"));
     if (removedCategoryId !== numberOfCategories - 1)
     {
@@ -464,22 +459,32 @@ function removeCategory(element) /////
     {
         let rightContainer = document.getElementById("right-container");
         document.getElementById("big-container-dashboard").removeChild(rightContainer);
-        // currentlyDisplayedCategory = null;
+
     }
-    else if (currentlyDisplayedCategory!== undefined && removedCategoryId < currentlyDisplayedCategory)
+    else if (currentlyDisplayedCategory !== undefined && removedCategoryId < currentlyDisplayedCategory)
     {
-        currentlyDisplayedCategory -=1; /// chyba wystarczy?? do przetestowania
+        currentlyDisplayedCategory -= 1; /// chyba wystarczy?? do przetestowania
+        /////
+        // /             SUPER WAŻNE !!!!!!!!!!!!!!!
+        //     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
+        //     /// trzeba zmienić kategorię wszsytkim elementom kategorii o większym numerze !!!
     }
 
-    let numberOfToDo = parseInt(localStorage.getItem("user"+userId +"category"+currentlyDisplayedCategory+"numberOfToDo"));
+    let numberOfToDo = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo"));
     for (let i = 0; i < numberOfToDo; i++)
     {
-        localStorage.removeItem("user"+userId+"category"+currentlyDisplayedCategory+"to-do"+i);
-        localStorage.removeItem("user"+userId+"category"+currentlyDisplayedCategory+"numberOfToDo");
+        localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + i);
+        localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo");
+    }
+    let numberOfDone = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfDone"));
+    for (let i = 0; i < numberOfDone; i++)
+    {
+        localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "done" + i);
+        localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfDone");
     }
 
     displayAllCategories();
-    // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
+
 
 }
 
@@ -501,15 +506,13 @@ function newUser()
 
         let numberOfUsers = parseInt(localStorage.getItem("numberOfUsers")) + 1;
         localStorage.setItem("numberOfUsers", numberOfUsers.toString());
-        printUserData(id);
+        // printUserData(id);
         displayDashboard();
     }
     else
     {
 
     }
-    // console.log("juz jest taki uzytkownik");
-
 }
 
 function printUserData()
@@ -522,6 +525,13 @@ function printUserData()
     console.log("User email: ", userEmail);
 
 
+}
+
+function login(e)
+{
+    // let email = document.getElementById("email");
+    /// bla bla bla pobrać Id, sprawdzić czy ok z hasłem, jeśli tak, to userId = ustalić i displayDashboard;
+    displayDashboard(e);
 }
 
 function logout()
@@ -541,7 +551,7 @@ function editTitle(title)
     inputField.classList.add("edit-input");
     inputField.value = title.innerText;
     inputField.focus();
-    // console.log(inputField);
+
     title.parentElement.insertBefore(inputField, title);
     inputField.addEventListener("keypress",
         (e) =>
@@ -551,12 +561,11 @@ function editTitle(title)
                 title.style.display = "block";
                 title.innerText = inputField.value;
                 title.parentElement.removeChild(inputField);
-                localStorage.setItem("user"+userId+"category"+currentlyDisplayedCategory, inputField.value);
+                localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory, inputField.value);
                 displayAllCategories();
             }
 
         });
-
 
 
 }

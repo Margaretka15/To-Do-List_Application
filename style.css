@@ -194,7 +194,8 @@ form{
 
 }
 i{
-    color: #464F41;
+    /*color: #464F41;*/
+    color: #7b8977;
    float: right;
     right: 2%;
     position: absolute;
@@ -216,9 +217,14 @@ i:hover{
 
     height: 30px;
     width: 30px;
+}
+.to-do-list-element{
 
 }
-
+.done-list-element{
+    color: gray;
+    text-decoration: line-through;
+}
 
 /*.mark-as-done-checkbox:checked{*/
 /*    background-color: gray;*/
@@ -289,7 +295,7 @@ align-content: center;
 }
 .categories-container{
     width: 34%;
-    border: 2px solid #464F41;
+    border: 1px solid #464F41;
     color: #464F41;
     background-color: #e4eedf;
     position: relative;
@@ -307,9 +313,6 @@ h1, h2, h3, h4{
     flex-direction: column;
     /*height: 100%;*/
     color: black;
-
-
-
 }
 #right-container > div{
     display: flex;
@@ -326,7 +329,7 @@ h1, h2, h3, h4{
 
 .category-element{
     background-color: white;
-    border: #464F41 solid 2px;
+    border: #464F41 solid 1px;
     /*height: 50px;*/
   /*padding: 2% 5%;*/
     margin-top: 5px;
@@ -413,7 +416,8 @@ h3{
         /*justify-content:  center;*/
 
     }
-    .list-small-outer-container{
+
+    .list-small-outer-container, #right-container{
         width: 100%;
     }
 }
