@@ -245,6 +245,8 @@ function createNewCategory()
     {
         numberOfCategories = parseInt(numberOfCategories);
     }
+    setCategoryNumberOfToDo(numberOfCategories, 0);
+    setCategoryNumberOfDone(numberOfCategories, 0);
     localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
     localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories + 1).toString());
 
@@ -263,11 +265,11 @@ function displayAllCategories()
     numberOfCategories = parseInt(numberOfCategories);
     let categoriesContainer = document.getElementById("categories-box");
     removeAllChildrenElements(categoriesContainer);
-    for (let i = numberOfCategories - 1; i >= 0; i--)
+    for (let i = 0; i < numberOfCategories; i++)
     {
         let newCategory = document.createElement("div");
         newCategory.classList.add("category-element");
-        let newTitle = localStorage.getItem("user" + userId + "category" + (numberOfCategories - 1 - i));
+        let newTitle = localStorage.getItem("user" + userId + "category" + (i));
 
         document.getElementById("category-title").value = "";
         newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
@@ -276,14 +278,14 @@ function displayAllCategories()
         newCategory.addEventListener("click", (e) =>
         {
             if (e.target.nodeName !== "I") ///// kto jest mądrą Gosią, no kto? <3
-                showCategory(numberOfCategories - 1 - i);
+                showCategory(i);
         });
 
         categoriesContainer.appendChild(newCategory);
 
         newCategory.querySelector("I").addEventListener("click", () =>
         {
-            removeCategory(numberOfCategories - 1 - i)
+            removeCategory(i)
         });
     }
 
@@ -335,8 +337,8 @@ function showCategory(shownCategoryId)
             toDoInputField.value = "";
         }
     })
-    displayList("to-do-list", "to-do", "numberOfToDo");
-    displayList("done-list", "done", "numberOfDone");
+    displayList("to-do");
+    displayList( "done");
 
 }
 
@@ -355,11 +357,14 @@ function addOneToDo(todo)
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + numberOfToDo, todo);
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", (numberOfToDo + 1).toString());
     // displayToDoList();
-    displayList("to-do-list", "to-do", "numberOfToDo");
+    displayList("to-do");
 }
 
-function displayList(listName, keyInLocalStorage, numberKey)
+function displayList(keyInLocalStorage)
 {
+    const listName = keyInLocalStorage + "-list";
+    const numberKey = (keyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
+
     let list = document.getElementById(listName).querySelector(".list");
     removeAllChildrenElements(list);
     let numberOfElements = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey);
@@ -387,11 +392,11 @@ function displayList(listName, keyInLocalStorage, numberKey)
 
                 if (listName === "to-do-list")
                 {
-                    setTimeout(() => toggleBetweenLists(listName, keyInLocalStorage, numberKey, "done", "numberOfDone", id), 100);
+                    setTimeout(() => moveToAnotherList(keyInLocalStorage, id), 100);
                 }
                 else
                 {
-                    toggleBetweenLists(listName, keyInLocalStorage, numberKey, "to-do", "numberOfToDo", id); //// DO ZROBIENIA!!!!!!
+                    moveToAnotherList(keyInLocalStorage, id); //// DO ZROBIENIA!!!!!!
                 }
 
             });
@@ -418,17 +423,22 @@ function removeElement(listName, keyInLocalStorage, numberKey, removedElementId)
     localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + (numberOfElements - 1).toString());
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey, (numberOfElements - 1).toString());
 
-    displayList("to-do-list", "to-do", "numberOfToDo");
-    displayList("done-list", "done", "numberOfDone");
+    displayList("to-do");
+    displayList("done");
 }
 
-function toggleBetweenLists(sourceListName, sourceListKeyInLocalStorage, sourceListNameNumberKey, targetListName, targetListNumberKey, elementId)
+function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
 {
+    const sourceListName = sourceListKeyInLocalStorage + "-list";
+    const sourceNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
+    const targetListName = (sourceListKeyInLocalStorage === "to-do") ? "done" : "to-do";
+    const targetNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfDone" : "numberOfToDo";
+
     //// to zdecydowanie nie jest ładna funkcja :((((
-    let numberOfElementsInTargetList = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey);
+    let numberOfElementsInTargetList = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey);
     if (numberOfElementsInTargetList === null)
     {
-        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey, "0");
+        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, "0");
         numberOfElementsInTargetList = 0;
     }
     else
@@ -437,13 +447,13 @@ function toggleBetweenLists(sourceListName, sourceListKeyInLocalStorage, sourceL
     }
     let movedElement = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + sourceListKeyInLocalStorage + elementId);
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListName + numberOfElementsInTargetList, movedElement);
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListNumberKey, (numberOfElementsInTargetList + 1).toString());
-    removeElement(sourceListName, sourceListKeyInLocalStorage, sourceListNameNumberKey, elementId);
+    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, (numberOfElementsInTargetList + 1).toString());
+    removeElement(sourceListName, sourceListKeyInLocalStorage, sourceNumberKey, elementId);
 }
 
 function removeCategory(removedCategoryId)
 {
-    let numberOfCategories = parseInt(localStorage.getItem("user" + userId + "numberOfCategories"));
+    let numberOfCategories = parseInt(getNumberOfCategories());
 
     if (currentlyDisplayedCategory === removedCategoryId)
     {
@@ -455,144 +465,46 @@ function removeCategory(removedCategoryId)
     }
 
 
-    if (removedCategoryId !== numberOfCategories - 1) //// jeśli nie usuwamy ostatniej kategorii
+    let numberOfToDo = parseInt(getCategoryNumberOfToDo(removedCategoryId));
+    let numberOfDone = parseInt(getCategoryNumberOfDone(removedCategoryId));
+    for (let i = 0; i < numberOfToDo; i++)
     {
-        for (let i = removedCategoryId + 1; i < numberOfCategories; i++)
-        {
-            let newCategoryId = i - 1;
-            let numberOfToDo = parseInt(localStorage.getItem("user"+userId+"category"+removedCategoryId+"numberOfToDo"));
-            for (let j = 0; j < numberOfToDo; j++)
-            {
-                localStorage.setItem("user" + userId + "category" + newCategoryId + "to-do" + j, localStorage.getItem("user" + userId + "category" +i + "to-do" + j));
-            }
-            localStorage.removeItem("user"+userId+"category"+removedCategoryId+"to-do" + (numberOfToDo-1)); /// usuwamy ostatni po przesunięciu
-            localStorage.setItem("user"+userId+"category"+newCategoryId+"numberOfToDo", numberOfToDo.toString());
-
-
-            let numberOfDone = parseInt(localStorage.getItem("user"+userId+"category"+removedCategoryId+"numberOfDone"));
-            for (let j = 0; j < numberOfDone; j++)
-            {
-                localStorage.setItem("user" + userId + "category" + newCategoryId + "done" + j, localStorage.getItem("user" + userId + "category" +i + "done" + j));
-            }
-            localStorage.removeItem("user"+userId+"category"+removedCategoryId+"done" + (numberOfDone-1)); /// usuwamy ostatni po przesunięciu
-            localStorage.setItem("user"+userId+"category"+newCategoryId+"numberOfDone", numberOfDone.toString());
-
-
-            let item = localStorage.getItem("user" + userId + "category" + i);
-            localStorage.setItem("user" + userId + "category" + newCategoryId, item); //// to działa
-        }
+        removeToDo(removedCategoryId, i);
     }
-    else
+    for (let i = 0; i < numberOfDone; i++)
     {
-        let numberOfToDo = parseInt(localStorage.getItem("user" + userId + "category" + removedCategoryId + "numberOfToDo"));
-        let numberOfDone = parseInt(localStorage.getItem("user" + userId + "category" + removedCategoryId + "numberOfDone"));
+        removeDone(removedCategoryId, i);
+    }
+    removeCategoryName(removedCategoryId);
+    removeCategoryNumberOfToDo(removedCategoryId);
+    removeCategoryNumberOfDone(removedCategoryId);
+
+    for (let categoryId = removedCategoryId; categoryId < numberOfCategories - 1; categoryId++)
+    {
+        setCategoryName(categoryId, getCategoryName(categoryId + 1));
+        removeCategoryName(categoryId + 1);
+
+        let numberOfToDo = parseInt(getCategoryNumberOfToDo(categoryId + 1));
+        let numberOfDone = parseInt(getCategoryNumberOfDone(categoryId + 1));
+        setCategoryNumberOfToDo(categoryId, numberOfToDo);
+        setCategoryNumberOfDone(categoryId, numberOfDone);
+        removeCategoryNumberOfToDo(categoryId + 1);
+        removeCategoryNumberOfDone(categoryId + 1);
+
         for (let i = 0; i < numberOfToDo; i++)
         {
-            localStorage.removeItem("user"+userId+"category" + removedCategoryId + "to-do"+i);
+            setToDo(categoryId, i, getToDo(categoryId + 1, i));
+            removeToDo(categoryId + 1, i);
         }
         for (let i = 0; i < numberOfDone; i++)
         {
-            localStorage.removeItem("user"+userId+"category" + removedCategoryId + "done"+i);
+            setDone(categoryId, i, getDone(categoryId + 1, i));
+            removeDone(categoryId + 1, i);
         }
-        localStorage.removeItem("user"+userId+"category"+removedCategoryId);
     }
-    localStorage.removeItem("user" + userId + "category" + (numberOfCategories - 1).toString());
-    localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories - 1).toString());
-    localStorage.removeItem("user"+userId+"category"+removedCategoryId+"numberOfDone");
-    localStorage.removeItem("user"+userId+"category"+removedCategoryId+"numberOfToDo");
+    setNumberOfCategories(numberOfCategories - 1)
 
     displayAllCategories();
-}
-
-
-
-function removeCategory2(removedCategoryId) /////
-{
-
-    let numberOfCategories = parseInt(localStorage.getItem("user" + userId + "numberOfCategories"));
-
-
-    if (removedCategoryId !== numberOfCategories - 1) //// jeśli nie usuwamy ostatniej kategorii
-    {
-        for (let i = removedCategoryId + 1; i < numberOfCategories; i++)
-        {
-            let newCategoryId = i - 1;
-            let item = localStorage.getItem("user" + userId + "category" + i);
-            localStorage.setItem("user" + userId + "category" + newCategoryId, item); //// to działa
-        }
-
-        for (let i = removedCategoryId; i < numberOfCategories; i++)
-        {
-
-            let newCategoryId = i - 1;
-            ////update lists
-            let numberOfToDo = localStorage.getItem("user"+userId+"category"+i+"numberOfToDo");
-            for (let j = 0; j < numberOfToDo; j++)
-            {
-                let movedElement = localStorage.getItem("user"+userId+"category"+i+"to-do"+j);
-                localStorage.setItem("user"+userId+"category"+newCategoryId+"to-do"+j, movedElement);
-                localStorage.removeItem("user"+userId+"category"+i+"to-do"+j);
-            }
-            localStorage.setItem("user"+userId+"category"+newCategoryId+"numberOfToDo", numberOfToDo);
-            localStorage.removeItem("user"+userId+"category"+i+"numberOfToDo");
-
-
-            // localStorage.removeItem("user"+userId+"category"+i+"numberOfToDo");
-            let numberOfDone = localStorage.getItem("user"+userId+"category"+i+"numberOfDone");
-            for (let j = 0; j < numberOfDone; j++)
-            {
-                let movedElement = localStorage.getItem("user"+userId+"category"+i+"done"+j);
-                localStorage.setItem("user"+userId+"category"+newCategoryId+"done"+j, movedElement);
-                localStorage.removeItem("user"+userId+"category"+i+"done"+j);
-            }
-            localStorage.setItem("user"+userId+"category"+newCategoryId+"numberOfDone", numberOfDone);
-            localStorage.removeItem("user"+userId+"category"+i+"numberOfDone");
-        }
-    }
-
-
-
-    if (currentlyDisplayedCategory === removedCategoryId)
-    {
-        let rightContainer = document.getElementById("right-container");
-        if(rightContainer!== null)
-        {
-            document.getElementById("big-container-dashboard").removeChild(rightContainer);
-        }
-
-
-        ///jakieś zło
-        // let numberOfToDo = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo"));
-        // for (let i = 0; i < numberOfToDo; i++)
-        // {
-        //     localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + i);
-        //     localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo");
-        // }
-        // let numberOfDone = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfDone"));
-        // for (let i = 0; i < numberOfDone; i++)
-        // {
-        //     localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "done" + i);
-        //     localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfDone");
-        // }
-        ////chyba konieczne ale obczaić jak to
-    }
-    else if (currentlyDisplayedCategory !== undefined && removedCategoryId < currentlyDisplayedCategory)
-    {
-        currentlyDisplayedCategory -= 1; /// chyba wystarczy?? do przetestowania
-
-    }
-    localStorage.removeItem("user" + userId + "category" + (numberOfCategories - 1).toString());
-    localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories - 1).toString()); ///
-
-    //
-
-
-    displayAllCategories();
-    /////
-    // /             SUPER WAŻNE !!!!!!!!!!!!!!!
-    //     // WAŻNE!!! Po dodaniu opcji dodawania elementów do kategorii je też trzeba będzie zmienić !!!
-    //     /// trzeba zmienić kategorię wszsytkim elementom kategorii o większym numerze !!!
-
 }
 
 function newUser()
@@ -693,4 +605,99 @@ function getMainSectionHTML()
         "<button id='sign-up-btn'>Sign up</button> " +
         "  </div>  </div>  ";
 
+}
+
+function getNumberOfUsers()
+{
+
+}
+
+function getNumberOfCategories()
+{
+    return localStorage.getItem("user" + userId + "numberOfCategories");
+}
+
+function getCategoryName(categoryId)
+{
+    return localStorage.getItem("user" + userId + "category" + categoryId);
+}
+
+function getCategoryNumberOfToDo(categoryId)
+{
+    return localStorage.getItem("user" + userId + "category" + categoryId + "numberOfToDo");
+}
+
+function getCategoryNumberOfDone(categoryId)
+{
+    return localStorage.getItem("user" + userId + "category" + categoryId + "numberOfDone");
+}
+
+function getToDo(categoryId, toDoId)
+{
+    return localStorage.getItem("user" + userId + "category" + categoryId + "to-do" + toDoId);
+}
+
+function getDone(categoryId, doneId)
+{
+    return localStorage.getItem("user" + userId + "category" + categoryId + "done" + doneId);
+}
+
+function setNumberOfCategories(numberOfCategories)
+{
+    localStorage.setItem("user" + userId + "numberOfCategories", numberOfCategories);
+}
+
+function setCategoryName(categoryId, name)
+{
+    localStorage.setItem("user" + userId + "category" + categoryId, name);
+}
+
+function setCategoryNumberOfToDo(categoryId, numberOfToDo)
+{
+    localStorage.setItem("user" + userId + "category" + categoryId + "numberOfToDo", numberOfToDo);
+}
+
+function setCategoryNumberOfDone(categoryId, numberOfDone)
+{
+    localStorage.setItem("user" + userId + "category" + categoryId + "numberOfDone", numberOfDone);
+}
+
+function setToDo(categoryId, toDoId, name)
+{
+    localStorage.setItem("user" + userId + "category" + categoryId + "to-do" + toDoId, name);
+}
+
+function setDone(categoryId, doneId, name)
+{
+    localStorage.setItem("user" + userId + "category" + categoryId + "done" + doneId, name);
+}
+
+function removeNumberOfCategories()
+{
+    localStorage.removeItem("user" + userId + "numberOfCategories");
+}
+
+function removeCategoryName(categoryId)
+{
+    localStorage.removeItem("user" + userId + "category" + categoryId);
+}
+
+function removeCategoryNumberOfToDo(categoryId)
+{
+    localStorage.removeItem("user" + userId + "category" + categoryId + "numberOfToDo");
+}
+
+function removeCategoryNumberOfDone(categoryId)
+{
+    localStorage.removeItem("user" + userId + "category" + categoryId + "numberOfDone");
+}
+
+function removeToDo(categoryId, toDoId)
+{
+    localStorage.removeItem("user" + userId + "category" + categoryId + "to-do" + toDoId);
+}
+
+function removeDone(categoryId, doneId)
+{
+    localStorage.removeItem("user" + userId + "category" + categoryId + "done" + doneId);
 }
