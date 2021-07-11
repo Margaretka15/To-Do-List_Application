@@ -45,6 +45,9 @@ function displayMainSection()
 
 function showMessage(e)
 {
+   if(document.getElementById("outer-gray-box") !== null)
+       return;
+
     let outerGrayBox = document.createElement("div");
     outerGrayBox.setAttribute("id", "outer-gray-box");
 
@@ -225,7 +228,7 @@ function displayDashboard(e)
     dashboardDisplayed = true;
 ////????????????
 
-
+    displayAllCategories();
 }
 
 function createNewCategory()
@@ -235,10 +238,10 @@ function createNewCategory()
     if (title === "")
         return;
 
-    let numberOfCategories = localStorage.getItem("user" + userId + "numberOfCategories");
+    let numberOfCategories = getNumberOfCategories();
     if (numberOfCategories === null)
     {
-        localStorage.setItem("user" + userId + "numberOfCategories", "0");
+        setNumberOfCategories(0);
         numberOfCategories = 0;
     }
     else
@@ -247,8 +250,8 @@ function createNewCategory()
     }
     setCategoryNumberOfToDo(numberOfCategories, 0);
     setCategoryNumberOfDone(numberOfCategories, 0);
-    localStorage.setItem("user" + userId + "category" + numberOfCategories, title);
-    localStorage.setItem("user" + userId + "numberOfCategories", (numberOfCategories + 1).toString());
+    setCategoryName(numberOfCategories, title);
+    setNumberOfCategories(numberOfCategories + 1);
 
     displayAllCategories();
     showCategory(numberOfCategories);
@@ -257,7 +260,7 @@ function createNewCategory()
 
 function displayAllCategories()
 {
-    let numberOfCategories = localStorage.getItem("user" + userId + "numberOfCategories");
+    let numberOfCategories = getNumberOfCategories();
     if (numberOfCategories === null)
     {
         return;
@@ -269,7 +272,7 @@ function displayAllCategories()
     {
         let newCategory = document.createElement("div");
         newCategory.classList.add("category-element");
-        let newTitle = localStorage.getItem("user" + userId + "category" + (i));
+        let newTitle = getCategoryName(i);
 
         document.getElementById("category-title").value = "";
         newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
@@ -295,7 +298,7 @@ function displayAllCategories()
 
 function showCategory(shownCategoryId)
 {
-    let categoryTitle = localStorage.getItem("user" + userId + "category" + shownCategoryId);
+    let categoryTitle = getCategoryName(shownCategoryId);
 
     let rightContainer = document.getElementById("right-container");
     if (rightContainer === null)
@@ -338,24 +341,24 @@ function showCategory(shownCategoryId)
         }
     })
     displayList("to-do");
-    displayList( "done");
+    displayList("done");
 
 }
 
 function addOneToDo(todo)
 {
-    let numberOfToDo = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo");
+    let numberOfToDo = getCategoryNumberOfToDo(currentlyDisplayedCategory);
     if (numberOfToDo === null)
     {
-        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", "0");
+        setCategoryNumberOfToDo(0);
         numberOfToDo = 0;
     }
     else
     {
-        numberOfToDo = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo"));
+        numberOfToDo = parseInt(getCategoryNumberOfToDo(currentlyDisplayedCategory));
     }
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "to-do" + numberOfToDo, todo);
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + "numberOfToDo", (numberOfToDo + 1).toString());
+    setToDo(currentlyDisplayedCategory, numberOfToDo, todo);
+    setCategoryNumberOfToDo(currentlyDisplayedCategory, numberOfToDo + 1);
     // displayToDoList();
     displayList("to-do");
 }
@@ -364,10 +367,12 @@ function displayList(keyInLocalStorage)
 {
     const listName = keyInLocalStorage + "-list";
     const numberKey = (keyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
+    const numberOfElements = (numberKey === "numberOfDone") ? getCategoryNumberOfDone(currentlyDisplayedCategory) : getCategoryNumberOfToDo(currentlyDisplayedCategory);
 
     let list = document.getElementById(listName).querySelector(".list");
     removeAllChildrenElements(list);
-    let numberOfElements = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey);
+
+
     if (numberOfElements !== null && numberOfElements !== "0")
     {
         for (let i = numberOfElements - 1; i >= 0; i--)
@@ -377,14 +382,14 @@ function displayList(keyInLocalStorage)
             newElement.classList.add("thin-dark-border");
             newElement.classList.add(listName + "-element");
             let id = numberOfElements - 1 - i;
-            let title = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + id);
+            let title = (numberKey === "numberOfDone") ? getDone(currentlyDisplayedCategory, id) : getToDo(currentlyDisplayedCategory, id);
 
             // document.getElementById("category-title").value = "";
             newElement.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
                 "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
             newElement.querySelector(".x-icon").addEventListener("click", () =>
             {
-                removeElement(listName, keyInLocalStorage, numberKey, id);
+                removeElement(keyInLocalStorage, id);
             });
             newElement.querySelector("INPUT").addEventListener("click", () =>
             {
@@ -409,19 +414,38 @@ function displayList(keyInLocalStorage)
     }
 }
 
-function removeElement(listName, keyInLocalStorage, numberKey, removedElementId)
+function removeElement(keyInLocalStorage, removedElementId)
 {
-    let numberOfElements = parseInt(localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey));
+    const numberKey = (keyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
+    const numberOfElements = (numberKey === "numberOfDone") ? getCategoryNumberOfDone(currentlyDisplayedCategory) : getCategoryNumberOfToDo(currentlyDisplayedCategory);
+
     if (removedElementId !== numberOfElements - 1)
     {
         for (let i = removedElementId + 1; i < numberOfElements; i++)
         {
-            let item = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + i);
-            localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + (i - 1), item);
+            let item = (numberKey === "numberOfDone") ? getDone(currentlyDisplayedCategory, i) : getToDo(currentlyDisplayedCategory, i);
+
+            if (numberKey === "numberOfDone")
+            {
+                setDone(currentlyDisplayedCategory, i - 1, item);
+            }
+            else
+            {
+                setToDo(currentlyDisplayedCategory, i - 1, item);
+            }
         }
     }
-    localStorage.removeItem("user" + userId + "category" + currentlyDisplayedCategory + keyInLocalStorage + (numberOfElements - 1).toString());
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + numberKey, (numberOfElements - 1).toString());
+
+    if (numberKey === "numberOfDone")
+    {
+        removeDone(currentlyDisplayedCategory, numberOfElements - 1);
+        setCategoryNumberOfDone(currentlyDisplayedCategory, numberOfElements - 1);
+    }
+    else
+    {
+        removeToDo(currentlyDisplayedCategory, numberOfElements - 1);
+        setCategoryNumberOfToDo(currentlyDisplayedCategory, numberOfElements - 1);
+    }
 
     displayList("to-do");
     displayList("done");
@@ -429,7 +453,7 @@ function removeElement(listName, keyInLocalStorage, numberKey, removedElementId)
 
 function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
 {
-    const sourceListName = sourceListKeyInLocalStorage + "-list";
+    // const sourceListName = sourceListKeyInLocalStorage + "-list";
     const sourceNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
     const targetListName = (sourceListKeyInLocalStorage === "to-do") ? "done" : "to-do";
     const targetNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfDone" : "numberOfToDo";
@@ -438,17 +462,18 @@ function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
     let numberOfElementsInTargetList = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey);
     if (numberOfElementsInTargetList === null)
     {
-        localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, "0");
-        numberOfElementsInTargetList = 0;
-    }
+        //     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, "0");
+        //     numberOfElementsInTargetList = 0;
+    } ///// no teraz  nie bęzie potrzebne, bo się ustawia w createCategory
     else
     {
         numberOfElementsInTargetList = parseInt(numberOfElementsInTargetList);
     }
+    /////
     let movedElement = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + sourceListKeyInLocalStorage + elementId);
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListName + numberOfElementsInTargetList, movedElement);
     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, (numberOfElementsInTargetList + 1).toString());
-    removeElement(sourceListName, sourceListKeyInLocalStorage, sourceNumberKey, elementId);
+    removeElement(sourceListKeyInLocalStorage, elementId);
 }
 
 function removeCategory(removedCategoryId)
@@ -580,7 +605,7 @@ function editTitle(title)
                 title.style.display = "block";
                 title.innerText = inputField.value;
                 title.parentElement.removeChild(inputField);
-                localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory, inputField.value);
+                setCategoryName(currentlyDisplayedCategory, inputField.value);
                 displayAllCategories();
             }
 
