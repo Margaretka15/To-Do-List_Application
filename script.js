@@ -57,7 +57,6 @@ function showMessage(e)
 
     mainSection.appendChild(outerGrayBox);
 
-
     let messageOuterContainer = document.createElement("div");
     messageOuterContainer.classList.add("big-box");
     messageOuterContainer.setAttribute("id", "big-message-container");
@@ -453,32 +452,34 @@ function removeElement(keyInLocalStorage, removedElementId)
 
 function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
 {
-    // const sourceListName = sourceListKeyInLocalStorage + "-list";
-    const sourceNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfToDo" : "numberOfDone";
     const targetListName = (sourceListKeyInLocalStorage === "to-do") ? "done" : "to-do";
     const targetNumberKey = (sourceListKeyInLocalStorage === "to-do") ? "numberOfDone" : "numberOfToDo";
 
-    //// to zdecydowanie nie jest ładna funkcja :((((
-    let numberOfElementsInTargetList = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey);
-    if (numberOfElementsInTargetList === null)
+
+    let numberOfElementsInTargetList = (targetNumberKey === "numberOfDone") ? getCategoryNumberOfDone(currentlyDisplayedCategory) : getCategoryNumberOfToDo(currentlyDisplayedCategory);
+    numberOfElementsInTargetList = parseInt(numberOfElementsInTargetList);
+
+
+    if(targetListName === "to-do")
     {
-        //     localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, "0");
-        //     numberOfElementsInTargetList = 0;
-    } ///// no teraz  nie bęzie potrzebne, bo się ustawia w createCategory
+        const movedElement = getDone(currentlyDisplayedCategory, elementId);
+        setToDo(currentlyDisplayedCategory, numberOfElementsInTargetList, movedElement);
+        setCategoryNumberOfToDo(currentlyDisplayedCategory, numberOfElementsInTargetList + 1);
+    }
     else
     {
-        numberOfElementsInTargetList = parseInt(numberOfElementsInTargetList);
+        const movedElement = getToDo(currentlyDisplayedCategory, elementId);
+        setDone(currentlyDisplayedCategory, numberOfElementsInTargetList, movedElement);
+        setCategoryNumberOfDone(currentlyDisplayedCategory, numberOfElementsInTargetList + 1 );
     }
-    /////
-    let movedElement = localStorage.getItem("user" + userId + "category" + currentlyDisplayedCategory + sourceListKeyInLocalStorage + elementId);
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetListName + numberOfElementsInTargetList, movedElement);
-    localStorage.setItem("user" + userId + "category" + currentlyDisplayedCategory + targetNumberKey, (numberOfElementsInTargetList + 1).toString());
+
+
     removeElement(sourceListKeyInLocalStorage, elementId);
 }
 
 function removeCategory(removedCategoryId)
 {
-    let numberOfCategories = parseInt(getNumberOfCategories());
+    const numberOfCategories = parseInt(getNumberOfCategories());
 
     if (currentlyDisplayedCategory === removedCategoryId)
     {
@@ -634,7 +635,7 @@ function getMainSectionHTML()
 
 function getNumberOfUsers()
 {
-
+    return localStorage.getItem("numberOfUsers");
 }
 
 function getNumberOfCategories()
