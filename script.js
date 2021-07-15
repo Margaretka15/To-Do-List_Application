@@ -1,16 +1,13 @@
 let mainSection;
 let dashboardSection;
 
-localStorage.clear();
+// localStorage.clear();
 
-if (localStorage.getItem("numberOfUsers") === null)
-    localStorage.setItem("numberOfUsers", "0");
+if (getNumberOfUsers() === null)
+    setNumberOfUsers(0);
 
-let userId = 0; //// potrzebne!! widoczne w wielu miejscach, będzie ustawiane w momencie logowania i wywalane przy wylogowaniu xD
-let messageDisplayed = false;
+let userId = -1; //// potrzebne!! widoczne w wielu miejscach, będzie ustawiane w momencie logowania i wywalane przy wylogowaniu xD
 
-let dashboardDisplayed = false;
-let categoriesOuterContainer;
 let currentlyDisplayedCategory;
 
 displayMainSection();
@@ -25,10 +22,6 @@ function displayMainSection()
     mainSection.setAttribute("id", "main-section");
 
 
-    messageDisplayed = false; ////// trzeba to zrobić tak, żeby w widoku mobilnym
-    // nie dało się w to kliknąć drugi raz !!
-    // !! do zrobienia!!!
-    dashboardDisplayed = false;
 
     mainSection.innerHTML = getMainSectionHTML();
     document.body.appendChild(mainSection);
@@ -45,8 +38,8 @@ function displayMainSection()
 
 function showMessage(e)
 {
-   if(document.getElementById("outer-gray-box") !== null)
-       return;
+    if (document.getElementById("outer-gray-box") !== null)
+        return;
 
     let outerGrayBox = document.createElement("div");
     outerGrayBox.setAttribute("id", "outer-gray-box");
@@ -55,7 +48,7 @@ function showMessage(e)
 
     outerGrayBox.classList.add("gray-box");
 
-    mainSection.appendChild(outerGrayBox);
+    document.body.appendChild(outerGrayBox);
 
     let messageOuterContainer = document.createElement("div");
     messageOuterContainer.classList.add("big-box");
@@ -63,7 +56,7 @@ function showMessage(e)
     messageOuterContainer.addEventListener("click", closeMessage);
     messageOuterContainer.innerHTML = "<div id=\"message-box\" style=\"display: block\"></div>";
 
-    mainSection.appendChild(messageOuterContainer);
+    document.body.appendChild(messageOuterContainer);
 
     let form = document.createElement("form");
     form.id = "sign-up-form";
@@ -72,7 +65,6 @@ function showMessage(e)
 
     message.appendChild(messageTitle);
     message.appendChild(form);
-    messageDisplayed = true;
 
     let element = e.target;
     if (element.id === "log-in-btn")
@@ -83,19 +75,26 @@ function showMessage(e)
     {
         displaySignUpForm();
     }
+    else if(element.id === "change-your-data")
+    {
+        displayChangeYourDataMessage();
+    }
 
     function displayLoginForm()
     {
 
         {
             messageTitle.innerText = "Log in";
-            removeAllChildrenElements(form);
+            if(form.hasChildNodes())
+                removeAllChildrenElements(form);
 
             createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "log-in-element");
             createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
 
             let submitButton = newButton(form, "light", "Log in");
-            submitButton.addEventListener("click", login);
+            submitButton.addEventListener("click", () => {
+                login();
+            });
 
         }
 
@@ -105,7 +104,8 @@ function showMessage(e)
     {
         messageTitle.innerText = "Sign up";
 
-        removeAllChildrenElements(form);
+        if(form.hasChildNodes())
+            removeAllChildrenElements(form);
 
         createInputField(form, "text", "name", "Your name", "Enter your name", "sign-up-element");
         createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-up-element");
@@ -118,15 +118,41 @@ function showMessage(e)
         submitButton.addEventListener("click", newUser);
     }
 
+    function displayChangeYourDataMessage()
+    {
+        messageTitle.innerText = "Your data";
+
+        if(form.hasChildNodes())
+            removeAllChildrenElements(form);
+
+        (createInputField(form, "text", "name", "Your name", "Your name", "change-data-element")).value = getUserName(userId);
+        (createInputField(form, "text", "surname", "Your surname", "Your surname", "change-data-element")).value = getUserSurname(userId);
+        (createInputField(form, "text", "email", "Your e-mail", "your e-mail", "change-data-element")).value = getUserEmail(userId);
+        (createInputField(form, "password", "password", "Password", "Your password", "change-data-element")).value = getUserPassword(userId);
+
+        let submitButton = newButton(form, "light", "Submit");
+        let cancelButton = newButton(form, "light", "Cancel");
+
+        submitButton.addEventListener("click", () => {
+            changeUserData(userId)
+        });
+        cancelButton.addEventListener("click", () =>
+        {
+            document.body.removeChild(document.getElementById("outer-gray-box"));
+            document.body.removeChild(document.getElementById("big-message-container"));
+        });
+
+    }
+
 }
 
 function closeMessage(e)
 {
-    if (e.target.id === "big-message-container")
+    // if (e.target.id === "big-message-container")
     {
 
-        mainSection.removeChild(document.getElementById("outer-gray-box"));
-        mainSection.removeChild(document.getElementById("big-message-container"));
+        document.body.removeChild(document.getElementById("outer-gray-box"));
+        document.body.removeChild(document.getElementById("big-message-container"));
     }
 }
 
@@ -143,6 +169,7 @@ function createInputField(parentNode, type, id, placeholder, label, className)
     newLabel.classList.add(className);
     parentNode.appendChild(newLabel);
     parentNode.appendChild(newInputField);
+    return newInputField;
 }
 
 function removeAllChildrenElements(parent)
@@ -173,6 +200,10 @@ function displayDashboard(e)
         // closeMessage(e);
     }
     document.body.removeChild(mainSection);
+    document.body.removeChild(document.getElementById("outer-gray-box"));
+    document.body.removeChild(document.getElementById("big-message-container"));
+
+
 
     dashboardSection = document.createElement("section");
     dashboardSection.id = "dashboard-section";
@@ -181,16 +212,19 @@ function displayDashboard(e)
     let bar = document.createElement("div");
     let logoutButton = newButton(bar, 'button', "Log out");
 
+    let changeDataButton = newButton(bar, 'button', "Change your data");
+
     bar.setAttribute("id", "bar");
     dashboardSection.appendChild(bar);
 
     logoutButton.id = "logout-button";
+    changeDataButton.id = "change-your-data";
     // logoutButton.setAttribute("id", "logout-button");
 
     logoutButton.addEventListener("click", logout);
+    changeDataButton.addEventListener("click", showMessage);
 
-
-    categoriesOuterContainer = document.createElement("div");
+    let categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
     categoriesOuterContainer.classList.add("column");
     categoriesOuterContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
@@ -224,8 +258,6 @@ function displayDashboard(e)
         });
 
     addListButton.addEventListener("click", createNewCategory);
-    dashboardDisplayed = true;
-////????????????
 
     displayAllCategories();
 }
@@ -460,7 +492,7 @@ function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
     numberOfElementsInTargetList = parseInt(numberOfElementsInTargetList);
 
 
-    if(targetListName === "to-do")
+    if (targetListName === "to-do")
     {
         const movedElement = getDone(currentlyDisplayedCategory, elementId);
         setToDo(currentlyDisplayedCategory, numberOfElementsInTargetList, movedElement);
@@ -470,7 +502,7 @@ function moveToAnotherList(sourceListKeyInLocalStorage, elementId)
     {
         const movedElement = getToDo(currentlyDisplayedCategory, elementId);
         setDone(currentlyDisplayedCategory, numberOfElementsInTargetList, movedElement);
-        setCategoryNumberOfDone(currentlyDisplayedCategory, numberOfElementsInTargetList + 1 );
+        setCategoryNumberOfDone(currentlyDisplayedCategory, numberOfElementsInTargetList + 1);
     }
 
 
@@ -536,52 +568,111 @@ function removeCategory(removedCategoryId)
 function newUser()
 {
     // let form = document.getElementById("sign-up-form");
-    let userName = document.getElementById("name").value;
-    let userSurname = document.getElementById("surname").value;
-    let userPassword = document.getElementById("password").value;
+
     let userEmail = document.getElementById("email").value;
-    if (localStorage.getItem(userName) === null)
+
+
+    if (getExistingUserId(userEmail) == null) /// ??????????
     {
-        let id = localStorage.getItem("numberOfUsers");
-        localStorage.setItem("user" + id, userName);
-        localStorage.setItem("user" + id + "surname", userSurname);
-        localStorage.setItem("user" + id + "pass", userPassword);
-        localStorage.setItem("user" + id + "email", userEmail);
+        let userName = document.getElementById("name").value;
+        let userSurname = document.getElementById("surname").value;
+        let userPassword = document.getElementById("password").value;
+
+        let id = parseInt(getNumberOfUsers());
 
 
-        let numberOfUsers = parseInt(localStorage.getItem("numberOfUsers")) + 1;
-        localStorage.setItem("numberOfUsers", numberOfUsers.toString());
+        setUserName(id, userName);
+        setUserSurname(id, userSurname);
+        setUserPassword(id, userPassword);
+        setUserEmail(id, userEmail);
+
+
+        let numberOfUsers = id + 1;
+        setNumberOfUsers(numberOfUsers);
+        userId = id;
         // printUserData(id);
         displayDashboard();
     }
     else
     {
+        //coś pasuje tu zrobić, wysłać info, że użytkownik istnieje
 
     }
+
+}
+function changeUserData(id)
+{
+    console.log("You tried to change your data!");
+    let userName = document.getElementById("name").value;
+    let userSurname = document.getElementById("surname").value;
+    let userPassword = document.getElementById("password").value;
+    let userEmail = document.getElementById("email").value;
+
+
+    setUserName(id, userName);
+    setUserSurname(id, userSurname);
+    setUserPassword(id, userPassword);
+    setUserEmail(id, userEmail);
+
+
 }
 
-function printUserData()
+
+
+function getExistingUserId(userEmail)
 {
-    let userName = localStorage.getItem("user" + userId);
+    let numberOfUsers = getNumberOfUsers();
+    for (let i = 0; i < numberOfUsers; i++)
+    {
+        let email = getUserEmail(i);
+        if (email === userEmail)
+            return i;
+    }
+    return null; //// dobra, może i nieładne, trudno.
+}
+
+function printUserData(id)
+{
+    let userName = getUserName(id)
     console.log("User name: ", userName);
-    let userSurname = localStorage.getItem("user" + userId + "surname");
+    let userSurname = getUserSurname(id);
     console.log("User surname: ", userSurname);
-    let userEmail = localStorage.getItem("user" + userId + "email");
+    let userEmail = getUserEmail(id);
     console.log("User email: ", userEmail);
 
 
 }
 
-function login(e)
+function login()
 {
-    // let email = document.getElementById("email");
-    /// bla bla bla pobrać Id, sprawdzić czy ok z hasłem, jeśli tak, to userId = ustalić i displayDashboard;
-    displayDashboard(e);
+    let email = document.getElementById("email").value;
+    let id = getExistingUserId(email);
+    if(id != null)
+    {
+        let enteredPassword = document.getElementById("password").value;
+
+        let storedPassword = getUserPassword(id);
+        if(enteredPassword === storedPassword)
+        {
+            userId = id;
+            displayDashboard();
+        }
+        else
+        {
+            console.log("Incorrect password");
+        }
+    }
+    else
+    {
+        console.log("Incorrect e-mail!")
+    }
+
 }
 
 function logout()
 {
     document.body.removeChild(dashboardSection);
+    userId = -1; ///// or what??
     displayMainSection();
 }
 
@@ -668,6 +759,32 @@ function getDone(categoryId, doneId)
     return localStorage.getItem("user" + userId + "category" + categoryId + "done" + doneId);
 }
 
+function getUserName(id)
+{
+    return localStorage.getItem("user" + id);
+
+}
+
+function getUserSurname(id)
+{
+    return localStorage.getItem("user" + id + "surname");
+}
+
+function getUserPassword(id)
+{
+    return localStorage.getItem("user" + id + "pass");
+}
+
+function getUserEmail(id)
+{
+    return localStorage.getItem("user" + id + "email");
+}
+
+function setNumberOfUsers(numberOfUsers)
+{
+    localStorage.setItem("numberOfUsers", numberOfUsers);
+}
+
 function setNumberOfCategories(numberOfCategories)
 {
     localStorage.setItem("user" + userId + "numberOfCategories", numberOfCategories);
@@ -696,6 +813,27 @@ function setToDo(categoryId, toDoId, name)
 function setDone(categoryId, doneId, name)
 {
     localStorage.setItem("user" + userId + "category" + categoryId + "done" + doneId, name);
+}
+
+function setUserName(id, userName)
+{
+    localStorage.setItem("user" + id, userName);
+
+}
+
+function setUserSurname(id, userSurname)
+{
+    localStorage.setItem("user" + id + "surname", userSurname);
+}
+
+function setUserPassword(id, userPassword)
+{
+    localStorage.setItem("user" + id + "pass", userPassword);
+}
+
+function setUserEmail(id, userEmail)
+{
+    localStorage.setItem("user" + id + "email", userEmail);
 }
 
 function removeNumberOfCategories()
