@@ -22,7 +22,6 @@ function displayMainSection()
     mainSection.setAttribute("id", "main-section");
 
 
-
     mainSection.innerHTML = getMainSectionHTML();
     document.body.appendChild(mainSection);
 
@@ -55,8 +54,9 @@ function showMessage(e)
     messageOuterContainer.setAttribute("id", "big-message-container");
     messageOuterContainer.addEventListener("click", (e) =>
     {
-        if (e.target.id === "big-message-container")
-             closeMessage();
+        // if (e.target.id === "big-message-container")
+        if(e.target === messageOuterContainer)
+            closeMessage();
     });
     messageOuterContainer.innerHTML = "<div id=\"message-box\" style=\"display: block\"></div>";
 
@@ -79,7 +79,7 @@ function showMessage(e)
     {
         displaySignUpForm();
     }
-    else if(element.id === "change-your-data")
+    else if (element.id === "account-settings")
     {
         displayChangeYourDataMessage();
     }
@@ -89,14 +89,15 @@ function showMessage(e)
 
         {
             messageTitle.innerText = "Log in";
-            if(form.hasChildNodes())
+            if (form.hasChildNodes())
                 removeAllChildrenElements(form);
 
             createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "log-in-element");
             createInputField(form, "password", "password", "Password", "Enter your password", "log-in-element");
 
             let submitButton = newButton(form, "light", "Log in");
-            submitButton.addEventListener("click", () => {
+            submitButton.addEventListener("click", () =>
+            {
                 login();
             });
 
@@ -108,7 +109,7 @@ function showMessage(e)
     {
         messageTitle.innerText = "Sign up";
 
-        if(form.hasChildNodes())
+        if (form.hasChildNodes())
             removeAllChildrenElements(form);
 
         createInputField(form, "text", "name", "Your name", "Enter your name", "sign-up-element");
@@ -126,7 +127,7 @@ function showMessage(e)
     {
         messageTitle.innerText = "Your data";
 
-        if(form.hasChildNodes())
+        if (form.hasChildNodes())
             removeAllChildrenElements(form);
 
         (createInputField(form, "text", "name", "Your name", "Your name", "change-data-element")).value = getUserName(userId);
@@ -137,7 +138,8 @@ function showMessage(e)
         let submitButton = newButton(form, "light", "Submit");
         let cancelButton = newButton(form, "light", "Cancel");
 
-        submitButton.addEventListener("click", () => {
+        submitButton.addEventListener("click", () =>
+        {
             changeUserData(userId);
             closeMessage();
         });
@@ -152,12 +154,8 @@ function showMessage(e)
 
 function closeMessage()
 {
-    // if (e.target.id === "big-message-container")
-    {
-
-        document.body.removeChild(document.getElementById("outer-gray-box"));
-        document.body.removeChild(document.getElementById("big-message-container"));
-    }
+    document.body.removeChild(document.getElementById("outer-gray-box"));
+    document.body.removeChild(document.getElementById("big-message-container"));
 }
 
 function createInputField(parentNode, type, id, placeholder, label, className)
@@ -169,6 +167,7 @@ function createInputField(parentNode, type, id, placeholder, label, className)
     newInputField.classList.add(className);
 
     let newLabel = document.createElement("label");
+    newLabel.id= "label-for-"+id;
     newLabel.innerText = label;
     newLabel.classList.add(className);
     parentNode.appendChild(newLabel);
@@ -208,25 +207,24 @@ function displayDashboard(e)
     document.body.removeChild(document.getElementById("big-message-container"));
 
 
-
     dashboardSection = document.createElement("section");
     dashboardSection.id = "dashboard-section";
     document.body.appendChild(dashboardSection);
 
     let bar = document.createElement("div");
+
+
+    let accountSettingsButton = newButton(bar, 'button', "Account settings");
     let logoutButton = newButton(bar, 'button', "Log out");
-
-    let changeDataButton = newButton(bar, 'button', "Change your data");
-
     bar.setAttribute("id", "bar");
     dashboardSection.appendChild(bar);
 
     logoutButton.id = "logout-button";
-    changeDataButton.id = "change-your-data";
+    accountSettingsButton.id = "account-settings";
     // logoutButton.setAttribute("id", "logout-button");
 
     logoutButton.addEventListener("click", logout);
-    changeDataButton.addEventListener("click", showMessage);
+    accountSettingsButton.addEventListener("click", showMessage);
 
     let categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
@@ -604,6 +602,7 @@ function newUser()
     }
 
 }
+
 function changeUserData(id)
 {
     console.log("You tried to change your data!");
@@ -620,7 +619,6 @@ function changeUserData(id)
 
 
 }
-
 
 
 function getExistingUserId(userEmail)
@@ -651,12 +649,12 @@ function login()
 {
     let email = document.getElementById("email").value;
     let id = getExistingUserId(email);
-    if(id != null)
+    if (id != null)
     {
         let enteredPassword = document.getElementById("password").value;
 
         let storedPassword = getUserPassword(id);
-        if(enteredPassword === storedPassword)
+        if (enteredPassword === storedPassword)
         {
             userId = id;
             displayDashboard();
@@ -664,11 +662,13 @@ function login()
         else
         {
             console.log("Incorrect password");
+            showLoginErrorMessage("password");
         }
     }
     else
     {
         console.log("Incorrect e-mail!")
+        showLoginErrorMessage("email");
     }
 
 }
@@ -680,6 +680,34 @@ function logout()
     displayMainSection();
 }
 
+function showLoginErrorMessage(elementName)
+{
+    let errorMessageDiv;
+    if(document.getElementById("error-message-div") === null)
+    {
+        errorMessageDiv = document.createElement("div");
+        errorMessageDiv.id = "error-message-div";
+    }
+    else
+    {
+        errorMessageDiv = document.getElementById("error-message-div");
+        errorMessageDiv.innerText ="";
+    }
+    errorMessageDiv.innerHTML = "<h2>Wrong "+elementName+"</h2>";
+
+    errorMessageDiv.classList.add("error-message");
+
+    document.getElementById("big-message-container").appendChild(errorMessageDiv);
+
+    errorMessageDiv.addEventListener("click", () => {
+        closeLoginError(document.getElementById("big-message-container"), errorMessageDiv);
+    });
+
+}
+function closeLoginError(parent, messageDiv)
+{
+    parent.removeChild(messageDiv);
+}
 
 function editTitle(title)
 {

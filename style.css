@@ -95,6 +95,7 @@ label{
     margin-top: 10px;
     margin-bottom: 5px;
 }
+
 #big-container-dashboard h1{
     margin: 0;
 
@@ -112,10 +113,29 @@ button:hover{
     /*height:60%;*/
     width: 70%;
     background-color: #464F41;
-    display: block;
-
+    display: flex;
+    flex-direction: column;
+    position: relative;
     padding: 40px 75px;
 }
+.error-message{
+
+     height: 150px;
+     background-color:#cce5ff;
+    position: fixed;
+    margin: auto;
+    width: 50%;
+    display: flex;
+    border-radius: 30px;
+    border: #b8daff 1px solid;
+}
+.error-message h2 {
+    color: #004085;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+}
+
 form{
     display: flex;
     width: 60%;
@@ -137,7 +157,7 @@ form{
     display: flex;
     height: 100%;
     width: 100%;
-    position: absolute;
+    position: fixed;
     z-index: 5;
     top: 0;
     justify-content: center;
@@ -169,6 +189,7 @@ form{
     width: 100%;
     display: flex;
     box-sizing: border-box;
+    justify-content: space-between;
 }
 #big-container-dashboard{
     display: flex;
