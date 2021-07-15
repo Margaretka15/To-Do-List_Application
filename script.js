@@ -53,7 +53,11 @@ function showMessage(e)
     let messageOuterContainer = document.createElement("div");
     messageOuterContainer.classList.add("big-box");
     messageOuterContainer.setAttribute("id", "big-message-container");
-    messageOuterContainer.addEventListener("click", closeMessage);
+    messageOuterContainer.addEventListener("click", (e) =>
+    {
+        if (e.target.id === "big-message-container")
+             closeMessage();
+    });
     messageOuterContainer.innerHTML = "<div id=\"message-box\" style=\"display: block\"></div>";
 
     document.body.appendChild(messageOuterContainer);
@@ -134,19 +138,19 @@ function showMessage(e)
         let cancelButton = newButton(form, "light", "Cancel");
 
         submitButton.addEventListener("click", () => {
-            changeUserData(userId)
+            changeUserData(userId);
+            closeMessage();
         });
         cancelButton.addEventListener("click", () =>
         {
-            document.body.removeChild(document.getElementById("outer-gray-box"));
-            document.body.removeChild(document.getElementById("big-message-container"));
+            closeMessage();
         });
 
     }
 
 }
 
-function closeMessage(e)
+function closeMessage()
 {
     // if (e.target.id === "big-message-container")
     {
