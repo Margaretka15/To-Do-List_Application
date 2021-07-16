@@ -78,7 +78,7 @@ input{
     border: none;
     outline: none;
     font-size: 1rem;
-    /*margin-bottom: 25px;*/
+    margin-bottom: 5px;
     /*margin-top: 5px;*/
 }
 .edit-input{
@@ -92,7 +92,7 @@ input{
 }
 label{
     width: 100%;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 5px;
 }
 
@@ -116,7 +116,7 @@ button:hover{
     display: flex;
     flex-direction: column;
     position: relative;
-    padding: 40px 75px;
+    padding: 40px 75px 90px;
 }
 
 label.log-in-element{
@@ -125,10 +125,12 @@ label.log-in-element{
 
 form p{
     width: 100%;
-    color: #fd0618;
-    margin: 0;
+    color: #ef5f67;
+    margin:  0;
     height: 0;
     font-weight: bold;
+    font-size: 0.8rem;
+
 }
 
 /*prawdopodobnie całe error message do wyrzucenia*/
@@ -158,7 +160,7 @@ form div button{
     width: 100%;
     margin-right:  3%;
     margin-top: 50px;
-    margin-bottom: 30px;
+    /*margin-bottom: 30px;*/
 }
 
 .open{
@@ -196,6 +198,10 @@ form div button{
 
 
 
+}
+
+#dashboard-section h1:hover{
+    color: #7b8977;
 }
 #bar{
     width: 100%;

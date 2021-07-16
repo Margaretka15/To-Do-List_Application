@@ -6,21 +6,16 @@ let dashboardSection;
 if (getNumberOfUsers() === null)
     setNumberOfUsers(0);
 
-let userId = -1; //// potrzebne!! widoczne w wielu miejscach, będzie ustawiane w momencie logowania i wywalane przy wylogowaniu xD
+let userId = -1; //// that's probably not the best solution. Works though
 
 let currentlyDisplayedCategory;
 
 displayMainSection();
-// document.addEventListener("click", (e) =>
-// {
-//     console.log(e.target);
-// });
 
 function displayMainSection()
 {
     mainSection = document.createElement("div");
     mainSection.setAttribute("id", "main-section");
-
 
     mainSection.innerHTML = getMainSectionHTML();
     document.body.appendChild(mainSection);
@@ -28,14 +23,11 @@ function displayMainSection()
     let loginButton = document.getElementById("log-in-btn");
     let signInButton = document.getElementById("sign-up-btn");
 
-
-    loginButton.addEventListener("click", showMessage);
-    signInButton.addEventListener("click", showMessage);
-
-
+    loginButton.addEventListener("click", showWindow);
+    signInButton.addEventListener("click", showWindow);
 }
 
-function showMessage(e)
+function showWindow(e) //// probably needs refactoring and moving parts of this function to separate functions
 {
     if (document.getElementById("outer-gray-box") !== null)
         return;
@@ -54,11 +46,10 @@ function showMessage(e)
     messageOuterContainer.setAttribute("id", "big-message-container");
     messageOuterContainer.addEventListener("click", (e) =>
     {
-        // if (e.target.id === "big-message-container")
-        if(e.target === messageOuterContainer)
-            closeMessage();
+        if (e.target === messageOuterContainer)
+            closeWindow();
     });
-    messageOuterContainer.innerHTML = "<div id=\"message-box\" style=\"display: block\"></div>";
+    messageOuterContainer.innerHTML = "<div id='message-box' style='display: block'></div>";
 
     document.body.appendChild(messageOuterContainer);
 
@@ -87,7 +78,6 @@ function showMessage(e)
     function displayLoginForm()
     {
         form.id = "login-form";
-
         {
             messageTitle.innerText = "Log in";
             if (form.hasChildNodes())
@@ -101,9 +91,7 @@ function showMessage(e)
             {
                 login();
             });
-
         }
-
     }
 
     function displaySignUpForm()
@@ -114,20 +102,34 @@ function showMessage(e)
         if (form.hasChildNodes())
             removeAllChildrenElements(form);
 
-        createInputField(form, "text", "name", "Your name", "Enter your name", "sign-up-element");
-        createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-up-element");
-        createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-up-element");
-        createInputField(form, "password", "password", "Password", "Enter your password", "sign-up-element");
-        createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-up-element");
+        let name = createInputField(form, "text", "name", "Your name", "Enter your name", "sign-up-element");
+        let surname = createInputField(form, "text", "surname", "Your surname", "Enter your surname", "sign-up-element");
+        let email = createInputField(form, "text", "email", "Your e-mail", "Enter your e-mail", "sign-up-element");
+        let passwordInputField = createInputField(form, "password", "password", "Password", "Enter your password", "sign-up-element");
+        let repeatedPasswordInputField = createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-up-element");
 
         let submitButton = newButton(form, "light", "Sign up");
+        let canAddNewUser = false;
+        passwordInputField.addEventListener("keyup", () =>
+        {
+            canAddNewUser = checkRepeatedPassword(passwordInputField, repeatedPasswordInputField);
+        });
+        repeatedPasswordInputField.addEventListener("keyup", () =>
+        {
+            canAddNewUser = checkRepeatedPassword(passwordInputField, repeatedPasswordInputField);
+        });
 
-        submitButton.addEventListener("click", newUser);
+        submitButton.addEventListener("click", () =>
+        {
+            console.log(canAddNewUser);
+            if (canAddNewUser)
+                newUser(name.value, surname.value, passwordInputField.value, email.value);
+        });
     }
 
     function displayChangeYourDataMessage()
     {
-        form.id =  "account-settings-form";
+        form.id = "account-settings-form";
 
         messageTitle.innerText = "Account settings";
 
@@ -150,18 +152,18 @@ function showMessage(e)
         submitButton.addEventListener("click", () =>
         {
             changeUserData(userId);
-            closeMessage();
+            closeWindow();
         });
         cancelButton.addEventListener("click", () =>
         {
-            closeMessage();
+            closeWindow();
         });
 
     }
 
 }
 
-function closeMessage()
+function closeWindow()
 {
     document.body.removeChild(document.getElementById("outer-gray-box"));
     document.body.removeChild(document.getElementById("big-message-container"));
@@ -176,7 +178,7 @@ function createInputField(parentNode, type, id, placeholder, label, className)
     newInputField.classList.add(className);
 
     let newLabel = document.createElement("label");
-    newLabel.id= "label-for-"+id;
+    newLabel.id = "label-for-" + id;
     newLabel.innerText = label;
     newLabel.classList.add(className);
     parentNode.appendChild(newLabel);
@@ -233,7 +235,7 @@ function displayDashboard(e)
     // logoutButton.setAttribute("id", "logout-button");
 
     logoutButton.addEventListener("click", logout);
-    accountSettingsButton.addEventListener("click", showMessage);
+    accountSettingsButton.addEventListener("click", showWindow);
 
     let categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
@@ -576,19 +578,11 @@ function removeCategory(removedCategoryId)
     displayAllCategories();
 }
 
-function newUser()
+function newUser(userName, userSurname, userPassword, userEmail)
 {
-    // let form = document.getElementById("sign-up-form");
-
-    let userEmail = document.getElementById("email").value;
-
 
     if (getExistingUserId(userEmail) == null) /// ??????????
     {
-        let userName = document.getElementById("name").value;
-        let userSurname = document.getElementById("surname").value;
-        let userPassword = document.getElementById("password").value;
-
         let id = parseInt(getNumberOfUsers());
 
 
@@ -601,13 +595,11 @@ function newUser()
         let numberOfUsers = id + 1;
         setNumberOfUsers(numberOfUsers);
         userId = id;
-        // printUserData(id);
         displayDashboard();
     }
     else
     {
-        //coś pasuje tu zrobić, wysłać info, że użytkownik istnieje
-
+       showFormErrorMessage(document.getElementById("sign-up-form"), "email", "This email is already taken!");
     }
 
 }
@@ -620,15 +612,12 @@ function changeUserData(id)
     let userPassword = document.getElementById("password").value;
     let userEmail = document.getElementById("email").value;
 
-
     setUserName(id, userName);
     setUserSurname(id, userSurname);
     setUserPassword(id, userPassword);
     setUserEmail(id, userEmail);
 
-
 }
-
 
 function getExistingUserId(userEmail)
 {
@@ -639,10 +628,10 @@ function getExistingUserId(userEmail)
         if (email === userEmail)
             return i;
     }
-    return null; //// dobra, może i nieładne, trudno.
+    return null;
 }
 
-function printUserData(id)
+function printUserData(id) /// this function is never used but was helpful and still may be useful
 {
     let userName = getUserName(id)
     console.log("User name: ", userName);
@@ -658,9 +647,10 @@ function login()
 {
     let email = document.getElementById("email").value;
     let id = getExistingUserId(email);
+    let form = document.getElementById("login-form");
     if (id != null)
     {
-        hideLoginErrorMessage("email");
+        hideLoginErrorMessage(form, "email");
         let enteredPassword = document.getElementById("password").value;
 
         let storedPassword = getUserPassword(id);
@@ -668,19 +658,17 @@ function login()
         {
             userId = id;
 
-            hideLoginErrorMessage("password");
+            hideLoginErrorMessage(form, "password");
             displayDashboard();
         }
         else
         {
-            console.log("Incorrect password");
-            showLoginErrorMessage("password");
+            showFormErrorMessage(form, "password", "Incorrect password!");
         }
     }
     else
     {
-        console.log("Incorrect e-mail!")
-        showLoginErrorMessage("email");
+        showFormErrorMessage(form, "email", "Incorrect e-mail!");
     }
 
 }
@@ -691,30 +679,38 @@ function logout()
     userId = -1; ///// or what??
     displayMainSection();
 }
-function showLoginErrorMessage(elementName)
+
+function showFormErrorMessage(form, elementId, messageText)
 {
     let message = document.createElement("p");
-    message.innerText = "Wrong "+elementName +"!";
-    let loginForm= document.getElementById("login-form");
+    message.innerText = messageText;
 
-    if(document.getElementById(elementName).nextSibling.nodeName !== "P")
-        loginForm.insertBefore(message, document.getElementById(elementName).nextSibling);
+    if (document.getElementById(elementId).nextSibling.nodeName !== "P")
+        form.insertBefore(message, document.getElementById(elementId).nextSibling);
 }
 
-function hideLoginErrorMessage(elementName)
+function hideLoginErrorMessage(form, elementName)
 {
-    let loginForm = document.getElementById("login-form");
-    if(document.getElementById(elementName).nextSibling.nodeName === "P")
+    // let loginForm = document.getElementById("login-form");
+    if (document.getElementById(elementName).nextSibling.nodeName === "P")
     {
-        loginForm.removeChild(document.getElementById(elementName).nextSibling);
+        form.removeChild(document.getElementById(elementName).nextSibling);
     }
 }
 
-
-function closeLoginError(parent, messageDiv)
+function checkRepeatedPassword(password, repeatedPassword)
 {
-    parent.removeChild(messageDiv);
+    let form = document.getElementById("sign-up-form");
+    if (password.value !== repeatedPassword.value)
+    {
+        showFormErrorMessage(form, "password", "Your passwords do not match");
+        return false;
+    }
+    else
+        hideLoginErrorMessage(form, "password");
+    return true;
 }
+
 
 function editTitle(title)
 {
@@ -725,7 +721,9 @@ function editTitle(title)
     let inputField = document.getElementById("editTitleInputField");
     inputField.classList.add("edit-input");
     inputField.value = title.innerText;
-    inputField.focus();
+    // inputField.focus();
+    inputField.select();
+
 
     title.parentElement.insertBefore(inputField, title);
     inputField.addEventListener("keypress",
@@ -741,8 +739,6 @@ function editTitle(title)
             }
 
         });
-
-
 }
 
 function getMainSectionHTML()
@@ -762,6 +758,8 @@ function getMainSectionHTML()
         "  </div>  </div>  ";
 
 }
+
+
 
 function getNumberOfUsers()
 {
