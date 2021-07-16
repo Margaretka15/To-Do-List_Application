@@ -119,48 +119,19 @@ button:hover{
     padding: 40px 75px;
 }
 
+label.log-in-element{
+    margin-top: 30px;
+}
 
+form p{
+    width: 100%;
+    color: #fd0618;
+    margin: 0;
+    height: 0;
+    font-weight: bold;
+}
 
 /*prawdopodobnie całe error message do wyrzucenia*/
-.error-message{
-
-    height: 150px;
-    background-color:#f8d7da;;
-    position: fixed;
-    margin: auto;
-    width: 30%;
-    display: flex;
-    border: #f5c6cb 1px solid;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.error-message h4 {
-    color:#721c24;
-    font-weight: bold;
-    text-align: center;
-    width: 80%;
-    padding: 0;
-
-}
-
-.error-message span{
-   --h: 40px;
-    margin-top: 10px;
-    height: var(--h);
-    width: var(--h);
-    text-align: center;
-    border-radius: 50%;
-    border: 2px solid #5a131b;
-    color:#721c24;
-    line-height: var(--h);
-    background-color: #f3a7ac;
-    cursor: pointer;
-
-}
-.error-message span:hover{
-    background-color: #ead3d5;
-}
 
 #message-box  h2{
      user-select: none;

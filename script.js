@@ -63,7 +63,6 @@ function showMessage(e)
     document.body.appendChild(messageOuterContainer);
 
     let form = document.createElement("form");
-    form.id = "sign-up-form";
     let messageTitle = document.createElement("h2");
     let message = document.getElementById("message-box");
 
@@ -83,9 +82,11 @@ function showMessage(e)
     {
         displayChangeYourDataMessage();
     }
+    form.firstElementChild.nextSibling.focus();
 
     function displayLoginForm()
     {
+        form.id = "login-form";
 
         {
             messageTitle.innerText = "Log in";
@@ -108,6 +109,7 @@ function showMessage(e)
     function displaySignUpForm()
     {
         messageTitle.innerText = "Sign up";
+        form.id = "sign-up-form";
 
         if (form.hasChildNodes())
             removeAllChildrenElements(form);
@@ -125,6 +127,8 @@ function showMessage(e)
 
     function displayChangeYourDataMessage()
     {
+        form.id =  "account-settings-form";
+
         messageTitle.innerText = "Account settings";
 
         if (form.hasChildNodes())
@@ -656,12 +660,15 @@ function login()
     let id = getExistingUserId(email);
     if (id != null)
     {
+        hideLoginErrorMessage("email");
         let enteredPassword = document.getElementById("password").value;
 
         let storedPassword = getUserPassword(id);
         if (enteredPassword === storedPassword)
         {
             userId = id;
+
+            hideLoginErrorMessage("password");
             displayDashboard();
         }
         else
@@ -684,31 +691,26 @@ function logout()
     userId = -1; ///// or what??
     displayMainSection();
 }
-
 function showLoginErrorMessage(elementName)
 {
-    let errorMessageDiv;
-    if(document.getElementById("error-message-div") === null)
-    {
-        errorMessageDiv = document.createElement("div");
-        errorMessageDiv.id = "error-message-div";
-    }
-    else
-    {
-        errorMessageDiv = document.getElementById("error-message-div");
-        errorMessageDiv.innerText ="";
-    }
-    errorMessageDiv.innerHTML = "<h4>Wrong "+elementName+"!</h4><span>Ok</span>";
+    let message = document.createElement("p");
+    message.innerText = "Wrong "+elementName +"!";
+    let loginForm= document.getElementById("login-form");
 
-    errorMessageDiv.classList.add("error-message");
-
-    document.getElementById("big-message-container").appendChild(errorMessageDiv);
-
-    errorMessageDiv.querySelector("SPAN").addEventListener("click", () => {
-        closeLoginError(document.getElementById("big-message-container"), errorMessageDiv);
-    });
-
+    if(document.getElementById(elementName).nextSibling.nodeName !== "P")
+        loginForm.insertBefore(message, document.getElementById(elementName).nextSibling);
 }
+
+function hideLoginErrorMessage(elementName)
+{
+    let loginForm = document.getElementById("login-form");
+    if(document.getElementById(elementName).nextSibling.nodeName === "P")
+    {
+        loginForm.removeChild(document.getElementById(elementName).nextSibling);
+    }
+}
+
+
 function closeLoginError(parent, messageDiv)
 {
     parent.removeChild(messageDiv);
