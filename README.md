@@ -10,7 +10,7 @@ This description was copied & pasted from the course resources.
 Create a simple "to-do list" application, using client-side HTML, CSS, and Javascript only. This application should store its data using localStorage only, and should not connect to any external APIs, backends, databases etc. This should function as a "Single Page Application", so the page should never actually refresh or reload, and no links should direct to any other page.
 
 # Details
-There were more requirements in this project but I don't want this readme to be too long. In short, user should be able to:
+There were more requirements in this project but I don't want this readme to become too long. In short, user should be able to:
 - sign up, log in
 - create new lists (categories) and tasks
 - change name of the lists
