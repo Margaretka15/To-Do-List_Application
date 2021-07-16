@@ -11,7 +11,7 @@ Create a simple "to-do list" application, using client-side HTML, CSS, and Javas
 
 ## Details
 There were more requirements in this project but I don't want this readme to become too long. In short, user should be able to:
-- sign up, log in (and since I had to store data in localStorage passwords are also stored in LocalStorage)
+- sign up, log in (and since I had to store data in localStorage passwords are also stored there)
 - create new lists (categories) and tasks
 - change name of the lists
 - remove tasks from their lists and remove lists
