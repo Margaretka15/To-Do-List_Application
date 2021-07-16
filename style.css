@@ -118,23 +118,56 @@ button:hover{
     position: relative;
     padding: 40px 75px;
 }
+
+
+
+/*prawdopodobnie całe error message do wyrzucenia*/
 .error-message{
 
-     height: 150px;
-     background-color:#cce5ff;
+    height: 150px;
+    background-color:#f8d7da;;
     position: fixed;
     margin: auto;
-    width: 50%;
+    width: 30%;
     display: flex;
-    border-radius: 30px;
-    border: #b8daff 1px solid;
+    border: #f5c6cb 1px solid;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-.error-message h2 {
-    color: #004085;
+.error-message h4 {
+    color:#721c24;
     font-weight: bold;
     text-align: center;
-    margin: auto;
+    width: 80%;
+    padding: 0;
+
 }
+
+.error-message span{
+   --h: 40px;
+    margin-top: 10px;
+    height: var(--h);
+    width: var(--h);
+    text-align: center;
+    border-radius: 50%;
+    border: 2px solid #5a131b;
+    color:#721c24;
+    line-height: var(--h);
+    background-color: #f3a7ac;
+    cursor: pointer;
+
+}
+.error-message span:hover{
+    background-color: #ead3d5;
+}
+
+#message-box  h2{
+     user-select: none;
+
+ }
+
+
 
 form{
     display: flex;
@@ -145,10 +178,18 @@ form{
     margin: auto;
     align-items: center;
 }
-#message-box  h2{
-    user-select: none;
-
+form div{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
 }
+form div button{
+    width: 100%;
+    margin-right:  3%;
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
 .open{
     display: block;
 }

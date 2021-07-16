@@ -125,7 +125,7 @@ function showMessage(e)
 
     function displayChangeYourDataMessage()
     {
-        messageTitle.innerText = "Your data";
+        messageTitle.innerText = "Account settings";
 
         if (form.hasChildNodes())
             removeAllChildrenElements(form);
@@ -135,8 +135,13 @@ function showMessage(e)
         (createInputField(form, "text", "email", "Your e-mail", "your e-mail", "change-data-element")).value = getUserEmail(userId);
         (createInputField(form, "password", "password", "Password", "Your password", "change-data-element")).value = getUserPassword(userId);
 
-        let submitButton = newButton(form, "light", "Submit");
-        let cancelButton = newButton(form, "light", "Cancel");
+        let buttonsContainer = document.createElement("div");
+
+        form.appendChild(buttonsContainer);
+
+        let cancelButton = newButton(buttonsContainer, "light", "Cancel");
+
+        let submitButton = newButton(buttonsContainer, "light", "Submit");
 
         submitButton.addEventListener("click", () =>
         {
@@ -693,13 +698,13 @@ function showLoginErrorMessage(elementName)
         errorMessageDiv = document.getElementById("error-message-div");
         errorMessageDiv.innerText ="";
     }
-    errorMessageDiv.innerHTML = "<h2>Wrong "+elementName+"</h2>";
+    errorMessageDiv.innerHTML = "<h4>Wrong "+elementName+"!</h4><span>Ok</span>";
 
     errorMessageDiv.classList.add("error-message");
 
     document.getElementById("big-message-container").appendChild(errorMessageDiv);
 
-    errorMessageDiv.addEventListener("click", () => {
+    errorMessageDiv.querySelector("SPAN").addEventListener("click", () => {
         closeLoginError(document.getElementById("big-message-container"), errorMessageDiv);
     });
 
