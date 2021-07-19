@@ -51,7 +51,7 @@ function showWindow(e) //// probably needs refactoring and moving parts of this 
         if (e.target === messageOuterContainer)
             closeWindow();
     });
-    messageOuterContainer.innerHTML = "<div id='message-box' style='display: block'></div>";
+    messageOuterContainer.innerHTML = `<div id='message-box' style='display: block'></div>`;
 
     document.body.appendChild(messageOuterContainer);
 
@@ -224,7 +224,7 @@ function newButton(parent, className, innerText)
 }
 
 
-function displayDashboard(e)
+function displayDashboard()
 {
     document.body.removeChild(mainSection);
     document.body.removeChild(document.getElementById("outer-gray-box"));
@@ -253,11 +253,14 @@ function displayDashboard(e)
     let categoriesOuterContainer = document.createElement("div");
     categoriesOuterContainer.classList.add("categories-container");
     categoriesOuterContainer.classList.add("column");
-    categoriesOuterContainer.innerHTML = "<div><h2> Your lists: </h2> </div>" +
-        "<div class = \"left-list-box\"> </div>" +
-        "<div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>" +
-        "</div>" +
-        "<div  id = 'categories-box' class = 'left-list-box'> </div>";
+    categoriesOuterContainer.innerHTML =
+        `<div>
+            <h2> Your lists: </h2> 
+        </div> 
+        <div class = "left-list-box"> </div>
+        <div id='input-box' class='input-box'> <input type='text' id='category-title' placeholder='Create new category here!'>
+        </div>
+        <div  id = 'categories-box' class = 'left-list-box'> </div>`;
     let addListButton = document.createElement("i");
     addListButton.classList.add("fa");
     addListButton.classList.add("fa-plus-circle");
@@ -341,8 +344,9 @@ function displayAllCategories()
         let newTitle = getCategoryName(i);
 
         document.getElementById("category-title").value = "";
-        newCategory.innerHTML = "<h3>" + newTitle + "</h3> " +
-            "<i class=\"fa fa-trash-o fa-2x trash-icon\" ></i>";
+        newCategory.innerHTML =
+            `<h3> ${newTitle} </h3> 
+            <i class=\"fa fa-trash-o fa-2x trash-icon\" ></i>`;
 
         newCategory.addEventListener("click", (e) =>
         {
@@ -382,19 +386,21 @@ function showCategory(shownCategoryId)
     {
         rightContainer.removeChild(rightContainer.lastElementChild);
     }
-    rightContainer.innerHTML = "<h1 onclick='editTitle(this)'> " + categoryTitle + " </h1> " +
-        "<div> <div id='to-do-list' class='list-small-outer-container'><h2> To do: </h2> " +
-
-        "<input type = 'text' placeholder='Plan something here!'  class='thin-dark-border'>"
-        +
-        " <div class = 'list'>" +
-
-        "  </div>" +
-        "</div> <div id ='done-list' class='list-small-outer-container'> <h2> Done: </h2>  " +
-        " <div class = 'list'>" +
-
-        "  </div>" +
-        "</div>  </div>";
+    rightContainer.innerHTML =
+        `<h1 onclick='editTitle(this)'>  ${categoryTitle} </h1> 
+        <div> 
+            <div id='to-do-list' class='list-small-outer-container'>
+                <h2> To do: </h2>
+                <input type = 'text' placeholder='Plan something here!'  class='thin-dark-border'>
+                <div class = 'list'>
+                </div>
+            </div> 
+            <div id ='done-list' class='list-small-outer-container'>
+                <h2> Done: </h2>  
+                <div class = 'list'>
+                </div>
+            </div> 
+        </div>`;
     currentlyDisplayedCategory = shownCategoryId;
 
     let toDoInputField = rightContainer.querySelector("INPUT");
@@ -450,9 +456,11 @@ function displayList(keyInLocalStorage)
             let id = numberOfElements - 1 - i;
             let title = (numberKey === "numberOfDone") ? getDone(currentlyDisplayedCategory, id) : getToDo(currentlyDisplayedCategory, id);
 
-            // document.getElementById("category-title").value = "";
-            newElement.innerHTML = " <input type='checkbox' class='mark-as-done-checkbox'> " +
-                "<h4>" + title + "</h4>   <i class=\"fa fas fa-times x-icon fa-2x\"></i>  ";
+            newElement.innerHTML =
+                `<input type='checkbox' class='mark-as-done-checkbox'>
+                 <h4>${title}</h4>  
+                 <i class=\"fa fas fa-times x-icon fa-2x\"></i> `;
+
             newElement.querySelector(".x-icon").addEventListener("click", () =>
             {
                 removeElement(keyInLocalStorage, id);
@@ -769,7 +777,7 @@ function editTitle(title)
     editTitleField.addEventListener("keypress",
         (e) =>
         {
-            if (e.key === 'Enter' && (!doesCategoryExist(editTitleField.value)) || editTitleField.value === title)
+            if (e.key === 'Enter' && !(doesCategoryExist(editTitleField.value) || editTitleField.value === title || editTitleField.value ===""))
             {
                 title.style.display = "block";
                 title.innerText = editTitleField.value;
@@ -783,19 +791,19 @@ function editTitle(title)
 
 function getMainSectionHTML()
 {
-    return "<div class ='container left'>" +
-        " <div class = 'box'> " +
-        "<h1>Plan your time </h1>" +
-        " <h2>Improve your life</h2>" +
-        " <p>Welcome! Plan your work and keep all your tasks in one place!" +
-        "<br><br> \“You create opportunities by performing, not complaining.\”</p> " +
-        " </div> " +
-        " <div class='image-div'></div>" +
-        "</div> " +
-        " <div class='container right' id='main-section-container-right'>" +
-        "   <button id='log-in-btn'>Log in</button>" +
-        "<button id='sign-up-btn'>Sign up</button> " +
-        "  </div>  </div>  ";
+    return `<div class ='container left'>
+                <div class = 'box'> 
+                    <h1>Plan your time </h1>
+                    <h2>Improve your life</h2>
+                    <p>Welcome! Plan your work and keep all your tasks in one place!" <br><br>  
+                     “You create opportunities by performing, not complaining.”</p> 
+                </div> 
+                 <div class='image-div'></div>
+            </div> 
+            <div class='container right' id='main-section-container-right'>
+                <button id='log-in-btn'>Log in</button>
+                <button id='sign-up-btn'>Sign up</button> 
+            </div>`;
 
 }
 
