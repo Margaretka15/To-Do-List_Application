@@ -81,6 +81,10 @@ input{
     margin-bottom: 5px;
     /*margin-top: 5px;*/
 }
+.input-checkbox{
+    height: 20px;
+    width: 20px;
+}
 .edit-input{
     font-size: 2rem;
     margin-bottom:  0;
@@ -91,11 +95,16 @@ input{
     height: 2.5rem;
 }
 label{
-    width: 100%;
+    width: 90%;
     margin-top: 20px;
     margin-bottom: 5px;
 }
-
+div > label {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 4px;
+}
 #big-container-dashboard h1{
     margin: 0;
 

@@ -108,6 +108,22 @@ function showWindow(e) //// probably needs refactoring and moving parts of this 
         let passwordInputField = createInputField(form, "password", "password", "Password", "Enter your password", "sign-up-element");
         let repeatedPasswordInputField = createInputField(form, "password", "password-repeated", "Password", "Repeat your password", "sign-up-element");
 
+       let checkboxDiv = document.createElement("div");
+        form.appendChild(checkboxDiv);
+
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "input-checkbox";
+        checkbox.id = "terms-of-use-checkbox";
+
+        let checkboxLabel = document.createElement("label");
+        checkboxLabel.htmlFor = "terms-of-use-checkbox";
+        checkboxLabel.innerText = "I agree  to the Terms of Use."
+
+        checkboxDiv.appendChild(checkbox);
+        checkboxDiv.appendChild(checkboxLabel);
+
+
         let submitButton = newButton(form, "light", "Sign up");
         let canAddNewUser = false;
         passwordInputField.addEventListener("keyup", () =>
@@ -121,8 +137,7 @@ function showWindow(e) //// probably needs refactoring and moving parts of this 
 
         submitButton.addEventListener("click", () =>
         {
-            console.log(canAddNewUser);
-            if (canAddNewUser)
+            if (canAddNewUser && checkbox.checked)
                 newUser(name.value, surname.value, passwordInputField.value, email.value);
         });
     }
@@ -606,7 +621,7 @@ function newUser(userName, userSurname, userPassword, userEmail)
 
 function changeUserData(id)
 {
-    console.log("You tried to change your data!");
+
     let userName = document.getElementById("name").value;
     let userSurname = document.getElementById("surname").value;
     let userPassword = document.getElementById("password").value;
@@ -747,8 +762,8 @@ function getMainSectionHTML()
         " <div class = 'box'> " +
         "<h1>Plan your time </h1>" +
         " <h2>Improve your life</h2>" +
-        " <p>Welcome! So nice to see you here but this is just a placeholder. Wait for the actual content" +
-        ":P <br><br> \“You create opportunities by performing, not complaining.\”</p> " +
+        " <p>Welcome! Plan your work and keep all your tasks in one place!" +
+        "<br><br> \“You create opportunities by performing, not complaining.\”</p> " +
         " </div> " +
         " <div class='image-div'></div>" +
         "</div> " +
