@@ -226,11 +226,6 @@ function newButton(parent, className, innerText)
 
 function displayDashboard(e)
 {
-    if (e !== undefined)
-    {
-        e.preventDefault();
-        // closeMessage(e);
-    }
     document.body.removeChild(mainSection);
     document.body.removeChild(document.getElementById("outer-gray-box"));
     document.body.removeChild(document.getElementById("big-message-container"));
@@ -311,24 +306,10 @@ function createNewCategory()
         numberOfCategories = parseInt(numberOfCategories);
     }
     let canAddCategory = true;
-    let categoryDivs = document.getElementsByClassName("category-element");
+
     if (numberOfCategories > 0)
     {
-        for (let i = 0; i < numberOfCategories; i++)
-        {
-
-            if (getCategoryName(i) === title)
-            {
-                console.log("powtarza się!");
-                canAddCategory = false;
-                categoryDivs[i].classList.add("animated");
-                setTimeout( () =>
-                {
-                    categoryDivs[i].classList.remove("animated");
-                }, 1000);
-            }
-
-        }
+        canAddCategory = !doesCategoryExist(title);
     }
 
     if (canAddCategory)
@@ -644,6 +625,24 @@ function newUser(userName, userSurname, userPassword, userEmail)
     }
 
 }
+function doesCategoryExist(title){
+    let categoryDivs = document.getElementsByClassName("category-element");
+    for (let i = 0; i < getNumberOfCategories(); i++)
+    {
+
+        if (getCategoryName(i) === title)
+        {
+            categoryDivs[i].classList.add("animated");
+            setTimeout( () =>
+            {
+                categoryDivs[i].classList.remove("animated");
+            }, 1000);
+            return true;
+        }
+
+    }
+    return false;
+}
 
 function changeUserData(id)
 {
@@ -759,23 +758,23 @@ function editTitle(title)
 
     createInputField(title.parentElement, "text", "editTitleInputField", "", "", "input");
 
-    let inputField = document.getElementById("editTitleInputField");
-    inputField.classList.add("edit-input");
-    inputField.value = title.innerText;
+    let editTitleField = document.getElementById("editTitleInputField");
+    editTitleField.classList.add("edit-input");
+    editTitleField.value = title.innerText;
     // inputField.focus();
-    inputField.select();
+    editTitleField.select();
 
 
-    title.parentElement.insertBefore(inputField, title);
-    inputField.addEventListener("keypress",
+    title.parentElement.insertBefore(editTitleField, title);
+    editTitleField.addEventListener("keypress",
         (e) =>
         {
-            if (e.key === 'Enter')
+            if (e.key === 'Enter' && (!doesCategoryExist(editTitleField.value)) || editTitleField.value === title)
             {
                 title.style.display = "block";
-                title.innerText = inputField.value;
-                title.parentElement.removeChild(inputField);
-                setCategoryName(currentlyDisplayedCategory, inputField.value);
+                title.innerText = editTitleField.value;
+                title.parentElement.removeChild(editTitleField);
+                setCategoryName(currentlyDisplayedCategory, editTitleField.value);
                 displayAllCategories();
             }
 
