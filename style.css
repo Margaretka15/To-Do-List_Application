@@ -95,7 +95,7 @@ input{
     height: 2.5rem;
 }
 label{
-    width: 90%;
+    width: 100%;
     margin-top: 20px;
     margin-bottom: 5px;
 }
@@ -274,16 +274,10 @@ i:hover{
     text-decoration: line-through;
 }
 
-/*.mark-as-done-checkbox:checked{*/
-/*    background-color: gray;*/
-/*}*/
+
 .column{
     box-sizing: border-box;
     height: 80vh;
-    /*background-color: gray;*/
-    /*margin-bottom: 2rem;*/
-    /*border-radius: 8px;*/
-    /*border: 2px solid #464F41;*/
     padding: 0.5rem 2rem;
     overflow-y: auto;
 }
@@ -299,8 +293,7 @@ i:hover{
     width: 100%;
     display: flex;
     flex-direction: row;
-    /*align-content: stretch;*/
-    /*justify-content:  center;*/
+
     justify-content: space-between;
 
 }
@@ -331,12 +324,12 @@ h4{
 
 }
 .list-element{
-    /*height: 35px;*/
+
     margin-top: 3px;
-    /*position: relative;*/
+
     display: flex;
 align-content: center;
-    /*justify-content: stretch;*/
+
     position: relative;
     overflow: hidden;
 
@@ -380,6 +373,8 @@ h1, h2, h3, h4{
     border: #464F41 solid 1px;
     /*height: 50px;*/
   /*padding: 2% 5%;*/
+    box-sizing: border-box;
+
     margin-top: 5px;
     line-height: 50px;
     display: flex;
@@ -397,38 +392,26 @@ h3{
     width: 100%;
     /*height: 100%;*/
     padding-left: 10px;
+    box-sizing: border-box;
     padding-right: 50px;
 }
 
 #logout-button{
-    /*position: absolute;*/
-    /*right: 3rem;*/
-    /*top: 3rem;*/
-    /*margin: 0;*/
+
     margin-bottom: 2rem;
     position: relative;
 }
-
-
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-    /*#main-section{*/
-    /*    flex-direction: column;*/
-    /*}*/
-    /*.container{*/
-    /*    width: 100%;*/
-    /*    height: 100vh;*/
-    /*}*/
-    /*.image-div{*/
-    /*    width: 100%;*/
-    /*    height: 100vh;*/
-    /*}*/
-    /*.right{*/
-    /*    height: 50vh;*/
-    /*}*/
+.animated{
+    animation-name: animation;
+    animation-duration: 1s;
 }
 
-/* Small devices (portrait tablets and large phones, 600px and up) */
+@keyframes animation {
+    0% {opacity: 1;}
+    50% {opacity: 0.3}
+    100% {opacity: 1;}
+}
+
 @media only screen and (max-width: 800px) {
     #main-section{
         flex-direction: column;

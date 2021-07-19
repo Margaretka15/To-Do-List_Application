@@ -4,7 +4,9 @@ let dashboardSection;
 // localStorage.clear();
 
 if (getNumberOfUsers() === null)
+{
     setNumberOfUsers(0);
+}
 
 let userId = -1; //// that's probably not the best solution. Works though
 
@@ -137,7 +139,8 @@ function showWindow(e) //// probably needs refactoring and moving parts of this 
 
         submitButton.addEventListener("click", () =>
         {
-            if (canAddNewUser && checkbox.checked)
+            /// It must be refactored because looks ugly.
+            if (canAddNewUser && checkbox.checked && name.value!=="" &&surname.value !=="" && passwordInputField.value!=="" && email.value!=="")
                 newUser(name.value, surname.value, passwordInputField.value, email.value);
         });
     }
@@ -307,16 +310,39 @@ function createNewCategory()
     {
         numberOfCategories = parseInt(numberOfCategories);
     }
-    setCategoryNumberOfToDo(numberOfCategories, 0);
-    setCategoryNumberOfDone(numberOfCategories, 0);
-    setCategoryName(numberOfCategories, title);
-    setNumberOfCategories(numberOfCategories + 1);
+    let canAddCategory = true;
+    let categoryDivs = document.getElementsByClassName("category-element");
+    if (numberOfCategories > 0)
+    {
+        for (let i = 0; i < numberOfCategories; i++)
+        {
 
-    displayAllCategories();
-    showCategory(numberOfCategories);
-    document.getElementById("to-do-list").querySelector("INPUT").focus(); /// chyba ma sens?
+            if (getCategoryName(i) === title)
+            {
+                console.log("powtarza się!");
+                canAddCategory = false;
+                categoryDivs[i].classList.add("animated");
+                setTimeout( () =>
+                {
+                    categoryDivs[i].classList.remove("animated");
+                }, 1000);
+            }
+
+        }
+    }
+
+    if (canAddCategory)
+    {
+        setCategoryNumberOfToDo(numberOfCategories, 0);
+        setCategoryNumberOfDone(numberOfCategories, 0);
+        setCategoryName(numberOfCategories, title);
+        setNumberOfCategories(numberOfCategories + 1);
+
+        displayAllCategories();
+        showCategory(numberOfCategories);
+        document.getElementById("to-do-list").querySelector("INPUT").focus(); /// chyba ma sens?}
+    }
 }
-
 function displayAllCategories()
 {
     let numberOfCategories = getNumberOfCategories();
@@ -596,7 +622,7 @@ function removeCategory(removedCategoryId)
 function newUser(userName, userSurname, userPassword, userEmail)
 {
 
-    if (getExistingUserId(userEmail) == null) /// ??????????
+    if (getExistingUserId(userEmail) == null)  //
     {
         let id = parseInt(getNumberOfUsers());
 
