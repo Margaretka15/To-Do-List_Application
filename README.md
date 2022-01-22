@@ -1,7 +1,10 @@
-# To-Do-List_Application
+# To-Do-List Application
 
 Personal project for online course on Pirple.com "Keeping Up With the Javascripts: ES6".
-
+The main goal:
+- get familiar with DOM manipulations using JS
+- use Local Storage
+- practice some basic CSS properties.
 
 ## Description 
 This description was copied & pasted from the course resources. 
